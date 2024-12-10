@@ -47,11 +47,16 @@ class Balance
     /**
      * 获取用户的余额
      * @param int $userId
+     * @param string $balanceType 余额类型
      * @return mixed
      */
-    public static function get(int $userId) 
+    public static function get(int $userId, string $balanceType = null) 
     {
-        return BalanceLogic::getUserBalance($userId);
+        $balance = BalanceLogic::getUserBalance($userId);
+        if ($balanceType) {
+            return $balance[$balanceType] ?? 0;
+        }
+        return $balance;
     }
 
 }
