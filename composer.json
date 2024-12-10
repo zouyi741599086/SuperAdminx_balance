@@ -1,0 +1,19 @@
+{
+    "name": "superadminx/balance",
+    "description": "文章管理系统",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "邹意",
+            "email": "741599086@qq.com"
+        }
+    ],
+    "minimum-stability": "stable",
+	"autoload": {
+        "psr-4": {
+            "SuperAdminx\\Balance\\": "src/"
+        }
+    },
+    "require": {}
+}
