@@ -12,10 +12,11 @@ class Install
      * @var array
      */
     protected static $pathRelation = [
-        '/plugin/news'            => '/plugin/news',
-        '/react/api/news.js'      => '/public/admin_react/src/api/news.js',
-        '/react/api/newsClass.js' => '/public/admin_react/src/api/newsClass.js',
-        '/react/pages/news'       => '/public/admin_react/src/pages/news',
+        '/plugin/balance'                               => '/plugin/balance',
+        '/public/admin_react/src/api/balance.js'        => '/public/admin_react/src/api/balance.js',
+        '/public/admin_react/src/api/balanceDetails.js' => '/public/admin_react/src/api/balanceDetails.js',
+        '/public/admin_react/src/pages/balance'         => '/public/admin_react/src/pages/balance',
+        '/public/admin_react/src/pages/balanceDetails'  => '/public/admin_react/src/pages/balanceDetails',
     ];
 
     // db的配置，用来标识是否已配置
