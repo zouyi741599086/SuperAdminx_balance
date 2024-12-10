@@ -53,6 +53,7 @@ class BalanceLogic
                 throw new \Exception("变更余额的值不能等于0");
             }
             $data = self::getUserBalance($params['user_id']);
+            
             // 增加余额
             if ($params['type'] == 1) {
                 $data->inc($params['balance_type'], $params['change_value'])->save();
@@ -82,14 +83,14 @@ class BalanceLogic
      */
     public static function getUserBalance(int $userId)
     {
-        $data = BalanceModel::where('user_id', $userId)->find();
+        $data = BalanceModel::where('user_id', $userId)->hidden(['create_time', 'update_time'])->find();
         // 不存在则新增用户余额
         if (! $data) {
             BalanceModel::create([
                 'user_id' => $userId
             ]);
         }
-        return BalanceModel::where('user_id', $userId)->find()->hidden(['create_time', 'update_time']);
+        return BalanceModel::where('user_id', $userId)->hidden(['create_time', 'update_time'])->find();
     }
 
     /**

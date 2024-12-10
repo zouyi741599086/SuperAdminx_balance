@@ -21,7 +21,7 @@ class BalanceDetailsLogic
      * @param bool $page 是否需要翻页
      * @param bool $filter 是否是用户端在调用
      * */
-    public static function getList(array $params = [], bool $page = true, bool $filter)
+    public static function getList(array $params = [], bool $page = true, bool $filter = false)
     {
         // 排序
         $orderBy = "id desc";
@@ -56,9 +56,7 @@ class BalanceDetailsLogic
             validate(BalanceDetailsValidate::class)->check($params);
 
             // 变化后的余额
-            $params['change_balance'] = BalanceModel::where('user_id', $params['user_id'])
-                ->value($params['balance_type']);
-
+            $params['change_balance'] = BalanceModel::where('user_id', $params['user_id'])->value($params['balance_type']);
             BalanceDetailsModel::create($params);
 
             Db::commit();
