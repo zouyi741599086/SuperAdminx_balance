@@ -1,6 +1,6 @@
 {
     "name": "superadminx/balance",
-    "description": "文章管理系统",
+    "description": "用户余额管理",
     "type": "library",
     "license": "MIT",
     "authors": [
