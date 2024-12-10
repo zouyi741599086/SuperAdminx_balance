@@ -44,7 +44,6 @@ class BalanceLogic
      */
     public static function updateBalance(array $params)
     {
-        $balanceType = config('plugin.balance.app.balance_type');
         Db::startTrans();
         try {
             validate(BalanceDetailsValidate::class)->check($params);
@@ -53,7 +52,7 @@ class BalanceLogic
                 throw new \Exception("变更余额的值不能等于0");
             }
             $data = self::getUserBalance($params['user_id']);
-            
+
             // 增加余额
             if ($params['type'] == 1) {
                 $data->inc($params['balance_type'], $params['change_value'])->save();
@@ -61,7 +60,8 @@ class BalanceLogic
             // 减少余额
             if ($params['type'] == 2) {
                 if ($params['change_value'] > $data[$params['balance_type']]) {
-                    abort("用户{$balanceType[$params['balance_type']]}不足");
+                    $tmp = self::findBalanceType($params['balance_type']);
+                    abort("用户{$tmp['title']}不足");
                 }
                 $data->dec($params['balance_type'], $params['change_value'])->save();
             }
@@ -74,6 +74,27 @@ class BalanceLogic
             Db::rollback();
             abort($e->getMessage());
         }
+    }
+
+    /**
+     * 查找余额类型
+     * @param string $balanceType
+     * @return mixed
+     */
+    private static function findBalanceType(string $balanceType)
+    {
+        $balanceTypeList = config('plugin.balance.app.balance_type');
+        $tmp             = null;
+        foreach ($balanceTypeList as $v) {
+            if ($v['field'] == $balanceType) {
+                $tmp = $v;
+                break;
+            }
+        }
+        if (! $tmp) {
+            abort('余额类型错误');
+        }
+        return $tmp;
     }
 
     /**
@@ -100,14 +121,14 @@ class BalanceLogic
     public static function exportData(array $params)
     {
         try {
-            $balanceType = config('plugin.balance.app.balance_type');
+            $balanceTypeList = config('plugin.balance.app.balance_type');
             // 表格头
             $header = array_merge(
                 ['用户'],
-                array_values($balanceType),
+                array_column($balanceTypeList, 'title'),
                 ['变更时间']
             );
-
+            var_dump($header);
             $list    = self::getList($params, false);
             $tmpList = [];
             foreach ($list as $v) {
@@ -115,9 +136,9 @@ class BalanceLogic
                 $tmp   = [];
                 $tmp[] = "{$v['User']['name']}/{$v['User']['tel']}";
 
-                // 防止类型的顺序跟数据库的对不上
-                foreach ($balanceType as $key => $val) {
-                    $tmp[] = $v[$key] ?? 0;
+                // 防止余额类型的顺序跟数据库的对不上
+                foreach ($balanceTypeList as $val) {
+                    $tmp[] = $v[$val['field']] ?? 0;
                 }
 
                 $tmp[]     = $v['update_time'] ?? '';
@@ -136,7 +157,7 @@ class BalanceLogic
             $excel->close();
 
             return [
-                'filePath' => $filePath,
+                'filePath' => str_replace(public_path(), '', $filePath),
                 'fileName' => $fileName
             ];
         } catch (\Exception $e) {

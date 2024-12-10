@@ -23,11 +23,9 @@ class Balance
     public static function change(int $userId, string $balanceType, float|int $changeValue, string $title) : void
     {
         try {
-            $configBalanceType = config('plugin.balance.app.balance_type');
-            if (! isset($configBalanceType[$balanceType])) {
-                throw new \Exception("变更的余额类型不存在");
-            }
-
+            // 检查余额类型
+            BalanceLogic::findBalanceType($balanceType);
+            
             if ($changeValue == 0) {
                 throw new \Exception("变更余额的值不能等于0");
             }

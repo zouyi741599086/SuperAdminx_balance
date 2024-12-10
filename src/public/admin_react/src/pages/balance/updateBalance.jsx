@@ -1,7 +1,5 @@
 import { useRef, useState } from 'react';
-import {
-    ModalForm,
-} from '@ant-design/pro-components';
+import { ModalForm, ProFormDependency } from '@ant-design/pro-components';
 import { balanceApi } from '@/api/balance';
 import { App } from 'antd';
 import { useUpdateEffect } from 'ahooks';
@@ -67,14 +65,12 @@ export default ({ tableReload, balanceType, updateBalanceUserId, setUpdateBalanc
                 label="变更余额类型"
                 placeholder="请输入"
                 request={async () => {
-                    let options = [];
-                    Object.keys(balanceType).forEach(key => {
-                        options.push({
-                            value: key,
-                            label: balanceType[key],
-                        })
+                    return balanceType.map(item => {
+                        return {
+                            value: item.field,
+                            label: item.title
+                        }
                     })
-                    return options;
                 }}
                 rules={[
                     { required: true, message: '请输入' },
@@ -92,20 +88,25 @@ export default ({ tableReload, balanceType, updateBalanceUserId, setUpdateBalanc
                     { required: true, message: '请选择' },
                 ]}
             />
-            <ProFormDigit
-                name="change_value"
-                label="变更值"
-                placeholder="请输入"
-                fieldProps={{
-                    precision: 2,
-                    style: { width: '100%' },
+
+            <ProFormDependency name={['balance_type']}>
+                {({ balance_type }) => {
+                    let tmp = balanceType.find(item => item.field == balance_type);
+                    return <ProFormDigit
+                        name="change_value"
+                        label="变更值"
+                        placeholder="请输入"
+                        fieldProps={{
+                            precision: tmp?.precision || 0,
+                            style: { width: '100%' },
+                        }}
+                        rules={[
+                            { required: true, message: '请输入' },
+                        ]}
+                    />
                 }}
-                min={0.01}
-                rules={[
-                    { required: true, message: '请输入' },
-                    { type: 'number', min: 0.01, message: '请输入正确的值' },
-                ]}
-            />
+            </ProFormDependency>
+
             <ProFormText
                 name="title"
                 label="变更原因"

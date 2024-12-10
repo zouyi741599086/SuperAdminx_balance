@@ -73,7 +73,12 @@ class BalanceDetailsLogic
     public static function exportData(array $params)
     {
         try {
-            $balanceType = config('plugin.balance.app.balance_type');
+            $balanceTypeList = config('plugin.balance.app.balance_type');
+            $balanceType     = [];
+            foreach ($balanceTypeList as $v) {
+                $balanceType[$v['field']] = $v['title'];
+            }
+
             // 表格头
             $header = ['用户', '余额类型', '标题', '类型', '变更值', '变更后余额', '变化时间'];
 
@@ -83,7 +88,7 @@ class BalanceDetailsLogic
                 // 导出的数据
                 $tmpList[] = [
                     "{$v['User']['name']}/{$v['User']['tel']}",
-                    $balanceType[$v['balance_type']] ?? '',
+                    $balanceType[$v['balance_type']] ?? $v['balance_type'],
                     $v['title'] ?? '',
                     $v['type'] == 1 ? '增加' : '减少',
                     $v['change_value'] ?? '',
@@ -104,7 +109,7 @@ class BalanceDetailsLogic
             $excel->close();
 
             return [
-                'filePath' => $filePath,
+                'filePath' => str_replace(public_path(), '', $filePath),
                 'fileName' => $fileName
             ];
         } catch (\Exception $e) {

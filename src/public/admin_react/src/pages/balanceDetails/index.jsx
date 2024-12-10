@@ -83,14 +83,12 @@ export default () => {
             valueType: 'select',
             request: async () => {
                 const result = await balanceApi.getBalanceType();
-                let list = [];
-                Object.keys(result.data).forEach(key => {
-                    list.push({
-                        value: key,
-                        label: result.data[key],
-                    })
+                return result.data.map(item => {
+                    return {
+                        value: item.field,
+                        label: item.title,
+                    }
                 })
-                return list;
             },
             fieldProps: {
                 showSearch: true,

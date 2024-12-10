@@ -123,19 +123,17 @@ export default () => {
         },
     ]);
     useEffect(() => {
-        let newColumns = [];
-        Object.keys(balanceType).forEach(key => {
-            newColumns.push({
-                title: balanceType[key],
-                dataIndex: key,
+        let newColumns = balanceType.map(item => {
+            return {
+                title: item.title,
+                dataIndex: item.field,
                 search: false,
                 sorter: true,
                 render: (_, record) => <>
-                    <Typography.Text type="danger">{record[key]}</Typography.Text>
+                    <Typography.Text type="danger">{record[item.field]}</Typography.Text>
                 </>
-            })
+            }
         })
-
         let _columns = [...columns];
         _columns.splice(1, 0, ...newColumns);
         setColumns(_columns);
