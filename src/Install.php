@@ -37,17 +37,7 @@ class Install
             if (self::installDetection()) {
 
                 foreach (self::$pathRelation as $source => $dest) {
-                    $type = self::checkPathOrFile($source);
-
-                    // 拷贝文件夹
-                    if ($type == 'folder') {
-                        self::copy_dir(__DIR__ . $source, base_path() . $dest);
-                    }
-
-                    // 拷贝文件
-                    if ($type == 'file') {
-                        copy(__DIR__ . $source, base_path() . $dest);
-                    }
+                    self::copy_dir(__DIR__ . $source, base_path() . $dest);
                 }
 
                 // 是否存在adminMenu.sql
@@ -84,27 +74,16 @@ class Install
 
         foreach (self::$pathRelation as $source => $dest) {
             try {
-                $type = self::checkPathOrFile($source);
-
-                // 删除文件夹
-                if ($type == 'folder') {
-                    remove_dir(base_path() . $dest);
-                }
-
-                // 删除文件
-                if ($type == 'file') {
-                    unlink(base_path() . $dest);
-                }
+                remove_dir(base_path() . $dest);
             } catch (\Exception $e) {
                 echo "{$e->getMessage()}\n";
             }
-
         }
 
         // 检测是否有adminMenu.sql，需要删除表中的权限节点
         $sqlPath = __DIR__ . '/adminMenu.sql';
         if (file_exists($sqlPath) && is_file($sqlPath)) {
-            // 提炼出安装的节点name
+            // 提炼出安装的权限节点name
             $adminMenuNames = self::getMenuNames($sqlPath);
             if ($adminMenuNames) {
                 Db::table(self::$dbConfig['DB_PREFIX'] . 'admin_menu')->where('name', 'in', $adminMenuNames)->delete();
