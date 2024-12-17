@@ -43,7 +43,6 @@ export default () => {
     const getBalanceType = () => {
         balanceApi.getBalanceType().then(res => {
             if (res.code === 1) {
-                console.log(res.data);
                 setBalanceType(res.data);
             } else {
                 message.error(res.message);

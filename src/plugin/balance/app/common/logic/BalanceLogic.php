@@ -128,7 +128,6 @@ class BalanceLogic
                 array_column($balanceTypeList, 'title'),
                 ['变更时间']
             );
-            var_dump($header);
             $list    = self::getList($params, false);
             $tmpList = [];
             foreach ($list as $v) {
