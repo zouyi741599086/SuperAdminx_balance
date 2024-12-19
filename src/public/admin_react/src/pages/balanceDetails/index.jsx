@@ -8,8 +8,9 @@ import { App, Button, Typography, Space, Tooltip, Avatar, Tag } from 'antd';
 import {
     CloudDownloadOutlined,
 } from '@ant-design/icons';
-import { authCheck } from '@/common/function';
+import { storage, authCheck } from '@/common/function';
 import SelectUser from '@/components/selectUser';
+import { useMount } from 'ahooks';
 
 /**
  * 用户余额明细 
@@ -21,6 +22,18 @@ export default () => {
     const { message } = App.useApp();
     const tableRef = useRef();
     const formRef = useRef();
+
+    useMount(() => {
+        // 看是否从余额列表跳过来的，读取搜索参数
+        const balanceDetailsFormParams = storage.get('balanceDetailsFormParams');
+        if (balanceDetailsFormParams) {
+            for (let i in balanceDetailsFormParams) {
+                formRef.current.setFieldValue(i, balanceDetailsFormParams[i]);
+            }
+            formRef.current.submit();
+            storage.remove('balanceDetailsFormParams');
+        }
+    });
 
     // 刷新表格数据
     const tableReload = () => {

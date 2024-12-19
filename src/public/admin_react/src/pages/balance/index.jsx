@@ -6,11 +6,12 @@ import { App, Button, Typography, Space, Tooltip, Avatar } from 'antd';
 import {
     CloudDownloadOutlined,
 } from '@ant-design/icons';
-import { authCheck } from '@/common/function';
+import { storage, authCheck } from '@/common/function';
 import { fileApi } from '@/api/file';
 import Lazyload from '@/component/lazyLoad/index';
 import SelectUser from '@/components/selectUser';
 import { useMount } from 'ahooks';
+import { useNavigate } from "react-router-dom";
 
 const UpdateBalance = lazy(() => import('./updateBalance'));
 
@@ -23,6 +24,7 @@ const UpdateBalance = lazy(() => import('./updateBalance'));
 export default () => {
     const { message } = App.useApp();
     const tableRef = useRef();
+    const navigate = useNavigate();
     const formRef = useRef();
 
     useMount(() => {
@@ -129,7 +131,23 @@ export default () => {
                 search: false,
                 sorter: true,
                 render: (_, record) => <>
-                    <Typography.Text type="danger">{record[item.field]}</Typography.Text>
+                    <Tooltip title={authCheck('balanceDetails') ? '' : '查看明细'}>
+                        <Button
+                            type="link"
+                            size="small"
+                            disabled={authCheck('balanceDetails')}
+                            onClick={() => {
+                                // 存搜索条件，跳转过去后在读出来
+                                storage.set('balanceDetailsFormParams', {
+                                    user_id: record.user_id,
+                                    balance_type: item.field
+                                })
+                                navigate('/balanceDetails');
+                            }}
+                        >
+                            <Typography.Text type="danger">{record[item.field]}</Typography.Text>
+                        </Button>
+                    </Tooltip>
                 </>
             }
         })
