@@ -61,7 +61,7 @@ class BalanceLogic
             if ($params['type'] == 2) {
                 if ($params['change_value'] > $data[$params['balance_type']]) {
                     $tmp = self::findBalanceType($params['balance_type']);
-                    abort("用户{$tmp['title']}不足");
+                    throw new \Exception("用户{$tmp['title']}不足");
                 }
                 $data->dec($params['balance_type'], $params['change_value'])->save();
             }
@@ -83,7 +83,7 @@ class BalanceLogic
      */
     private static function findBalanceType(string $balanceType)
     {
-        $balanceTypeList = config('plugin.balance.app.balance_type');
+        $balanceTypeList = config('superadminx.balance_type');
         $tmp             = null;
         foreach ($balanceTypeList as $v) {
             if ($v['field'] == $balanceType) {
@@ -110,8 +110,9 @@ class BalanceLogic
             BalanceModel::create([
                 'user_id' => $userId
             ]);
+            $data = BalanceModel::where('user_id', $userId)->hidden(['create_time', 'update_time'])->find();
         }
-        return BalanceModel::where('user_id', $userId)->hidden(['create_time', 'update_time'])->find();
+        return $data;
     }
 
     /**
@@ -121,7 +122,7 @@ class BalanceLogic
     public static function exportData(array $params)
     {
         try {
-            $balanceTypeList = config('plugin.balance.app.balance_type');
+            $balanceTypeList = config('superadminx.balance_type');
             // 表格头
             $header = array_merge(
                 ['用户'],

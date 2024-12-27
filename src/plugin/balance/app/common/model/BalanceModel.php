@@ -39,7 +39,6 @@ class BalanceModel extends BaseModel
         ($value && is_array($value)) && $query->where('update_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
     }
 
-
     // 所属用户 关联模型
     public function User()
     {

@@ -15,7 +15,7 @@ class Balance
     /**
      * 变更用户余额
      * @param int $userId 用户id
-     * @param string $balanceType 余额类型，看app配置
+     * @param string $balanceType 余额类型，看config/superadminx.php里面的余额配置
      * @param float|int $changeValue 变化的值，正数为加，负数为减少
      * @param string $title 变更的原因
      * @return void
@@ -45,7 +45,7 @@ class Balance
     /**
      * 获取用户的余额
      * @param int $userId
-     * @param string $balanceType 余额类型
+     * @param string $balanceType 余额类型，看config/superadminx.php里面的余额配置
      * @return mixed
      */
     public static function get(int $userId, string $balanceType = null) 

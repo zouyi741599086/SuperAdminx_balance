@@ -73,7 +73,7 @@ class BalanceDetailsLogic
     public static function exportData(array $params)
     {
         try {
-            $balanceTypeList = config('plugin.balance.app.balance_type');
+            $balanceTypeList = config('superadminx.balance_type');
             $balanceType     = [];
             foreach ($balanceTypeList as $v) {
                 $balanceType[$v['field']] = $v['title'];

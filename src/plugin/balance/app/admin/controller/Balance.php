@@ -44,7 +44,7 @@ class Balance
      */
     public function getBalanceType(Request $request)
     {
-        return success(config('plugin.balance.app.balance_type'));
+        return success(config('superadminx.balance_type'));
     }
 
     /**
