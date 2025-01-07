@@ -80,7 +80,7 @@ class BalanceDetailsLogic
             }
 
             // 表格头
-            $header = ['用户', '余额类型', '标题', '类型', '变更值', '变更后余额', '变化时间'];
+            $header = ['用户', '余额类型', '标题', '变更值', '变更后余额', '变化时间'];
 
             $list    = self::getList($params, false);
             $tmpList = [];
@@ -90,8 +90,7 @@ class BalanceDetailsLogic
                     "{$v['User']['name']}/{$v['User']['tel']}",
                     $balanceType[$v['balance_type']] ?? $v['balance_type'],
                     $v['title'] ?? '',
-                    $v['type'] == 1 ? '增加' : '减少',
-                    $v['change_value'] ?? '',
+                    $v['type'] == 1 ? "+{$v['change_value']}" : "-{$v['change_value']}",
                     $v['change_balance'] ?? '',
                     $v['create_time'] ?? '',
                 ];

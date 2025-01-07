@@ -116,7 +116,7 @@ export default () => {
             render: (_, record) => _,
         },
         {
-            title: '类型',
+            title: '变更类型',
             dataIndex: 'type',
             search: true,
             valueType: 'select',
@@ -133,14 +133,7 @@ export default () => {
                     },
                 ]
             },
-            render: (_, record) => <>
-                {record.type === 1 ? <>
-                    <Tag bordered={false} color="processing">增加</Tag>
-                </> : ''}
-                {record.type === 2 ? <>
-                    <Tag bordered={false} color="success">减少</Tag>
-                </> : ''}
-            </>
+            hideInTable: true,
         },
         {
             title: '变更值',
@@ -148,7 +141,11 @@ export default () => {
             search: false,
             sorter: true,
             render: (_, record) => <>
-                <Typography.Text type="danger">{record.change_value}</Typography.Text>
+                {record.type == 1 ? <>
+                    <Typography.Text type="danger">+{record.change_value}</Typography.Text>
+                </> : <>
+                    <Typography.Text type="success">-{record.change_value}</Typography.Text>
+                </>}
             </>
         },
         {
@@ -157,7 +154,7 @@ export default () => {
             dataIndex: 'change_balance',
             search: false,
             render: (_, record) => <>
-                <Typography.Text type="success">{record.change_balance}</Typography.Text>
+                <Typography.Text type="warning">{record.change_balance}</Typography.Text>
             </>
         },
         {
