@@ -16,7 +16,6 @@ class Install
         '/public/admin_react/src/api/balance.js'        => '/public/admin_react/src/api/balance.js',
         '/public/admin_react/src/api/balanceDetails.js' => '/public/admin_react/src/api/balanceDetails.js',
         '/public/admin_react/src/pages/balance'         => '/public/admin_react/src/pages/balance',
-        '/public/admin_react/src/pages/balanceDetails'  => '/public/admin_react/src/pages/balanceDetails',
     ];
 
     // db的配置，用来标识是否已配置
