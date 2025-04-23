@@ -61,7 +61,7 @@ class BalanceLogic
             if ($params['type'] == 2) {
                 if ($params['change_value'] > $data[$params['balance_type']]) {
                     $tmp = self::findBalanceType($params['balance_type']);
-                    throw new \Exception("用户{$tmp['title']}不足");
+                    throw new \Exception("{$tmp['title']}不足");
                 }
                 $data->dec($params['balance_type'], $params['change_value'])->save();
             }

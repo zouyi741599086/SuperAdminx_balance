@@ -49,22 +49,17 @@ class BalanceWithdrawLogic
     /**
      * 新增，申请提现
      * @param array $params
+     * @param string $balanceType 提现的是balance表中哪个字段
      */
-    public static function create(array $params)
+    public static function create(array $params, string $balanceType = 'money')
     {
         Db::startTrans();
         try {
             validate(BalanceWithdrawValidate::class)->check($params);
 
-            // 判断用户余额是否充足
-            $userBalance = Balance::get($params['user_id'], $params['balance_type']);
-            if ($params['money'] > $userBalance) {
-                abort('余额不足', -1);
-            }
-
             // 减少余额
-            Balance::change($params['user_id'], $params['balance_type'], -$params['money'], '提现申请');
-            
+            Balance::change($params['user_id'], $balanceType, -$params['money'], '提现申请');
+
             // 提现的相关配置
             $config = \app\common\logic\ConfigLogic::getConfig('balance_withdraw_config');
 
@@ -73,9 +68,10 @@ class BalanceWithdrawLogic
             }
 
             // 提现的手续费
-            $params['shouxufei'] = d2($params['money'] * $config['shouxufei_bili'] / 100);
-            $params['on_money']  = $params['money'] - $params['shouxufei'];
-            $params['orderno']   = get_order_no('TX');
+            $params['shouxufei']    = d2($params['money'] * $config['shouxufei_bili'] / 100);
+            $params['on_money']     = $params['money'] - $params['shouxufei'];
+            $params['orderno']      = get_order_no('TX');
+            $params['balance_type'] = $balanceType;
 
             BalanceWithdrawModel::create($params);
             Db::commit();

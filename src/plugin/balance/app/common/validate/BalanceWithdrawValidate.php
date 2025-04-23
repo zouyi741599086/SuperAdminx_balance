@@ -14,7 +14,6 @@ class BalanceWithdrawValidate extends Validate
 
     // 验证规则
     protected $rule = [
-        'balance_type|余额类型' => 'require',
         'money|提现金额'        => 'require',
         'bank_name|姓名'      => 'require',
         'bank_title|银行'     => 'require',
