@@ -28,7 +28,6 @@ class BalanceDetailsModel extends BaseModel
     protected $file = [
     ];
 
-
     // 用户 搜索器
     public function searchUserIdAttr($query, $value, $data)
     {
@@ -58,7 +57,6 @@ class BalanceDetailsModel extends BaseModel
     {
         ($value && is_array($value)) && $query->where('create_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
     }
-
 
     // 所属用户 关联模型
     public function User()

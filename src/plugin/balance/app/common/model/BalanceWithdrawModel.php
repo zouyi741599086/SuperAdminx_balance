@@ -1,0 +1,91 @@
+<?php
+namespace plugin\balance\app\common\model;
+
+use app\common\model\BaseModel;
+
+/**
+ * 余额提现 模型
+ *
+ * @author zy <741599086@qq.com>
+ * @link https://www.superadminx.com/
+ * */
+class BalanceWithdrawModel extends BaseModel
+{
+
+    // 表名
+    protected $name = 'balance_withdraw';
+
+    // 自动时间戳
+    protected $autoWriteTimestamp = true;
+
+    // 字段类型转换
+    protected $type = [
+    ];
+
+    // 包含附件的字段，''代表直接等于附件路劲，'array'代表数组中包含附件路劲，'editor'代表富文本中包含附件路劲
+    protected $file = [
+    ];
+
+
+    // 用户 搜索器
+    public function searchUserIdAttr($query, $value, $data)
+    {
+        ($value != null) && $query->where('user_id', '=', $value);
+    }
+
+    // 单号 搜索器
+    public function searchOrdernoAttr($query, $value, $data)
+    {
+        ($value != null) && $query->where('orderno', 'like', "%{$value}%");
+    }
+
+    // 状态 搜索器
+    public function searchStatusAttr($query, $value, $data)
+    {
+        ($value != null) && $query->where('status', '=', $value);
+    }
+
+    // 姓名 搜索器
+    public function searchBankNameAttr($query, $value, $data)
+    {
+        ($value != null) && $query->where('bank_name', 'like', "%{$value}%");
+    }
+
+    // 银行 搜索器
+    public function searchBankTitleAttr($query, $value, $data)
+    {
+        ($value != null) && $query->where('bank_title', 'like', "%{$value}%");
+    }
+
+    // 银行卡号 搜索器
+    public function searchBankNumberAttr($query, $value, $data)
+    {
+        ($value != null) && $query->where('bank_number', 'like', "%{$value}%");
+    }
+
+    // 申请时间 搜索器
+    public function searchCreateTimeAttr($query, $value, $data)
+    {
+        ($value && is_array($value)) && $query->where('create_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
+    }
+
+    // 审核时间 搜索器
+    public function searchAuditTimeAttr($query, $value, $data)
+    {
+        ($value && is_array($value)) && $query->where('audit_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
+    }
+
+    // 失败原因 搜索器
+    public function searchReasonAttr($query, $value, $data)
+    {
+        ($value != null) && $query->where('reason', 'like', "%{$value}%");
+    }
+
+
+    // 所属用户 关联模型
+    public function User()
+    {
+        return $this->belongsTo(\app\common\model\UserModel::class);
+    }
+
+}

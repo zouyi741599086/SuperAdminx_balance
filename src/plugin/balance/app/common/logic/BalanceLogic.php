@@ -81,7 +81,7 @@ class BalanceLogic
      * @param string $balanceType
      * @return mixed
      */
-    private static function findBalanceType(string $balanceType)
+    public static function findBalanceType(string $balanceType)
     {
         $balanceTypeList = config('superadminx.balance_type');
         $tmp             = null;
