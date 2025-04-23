@@ -44,6 +44,12 @@ class Install
                 if (file_exists($sqlPath) && is_file($sqlPath)) {
                     self::installSql($sqlPath);
                 }
+				
+				// 是否存在config.sql
+                $sqlPath = __DIR__ . '/config.sql';
+                if (file_exists($sqlPath) && is_file($sqlPath)) {
+                    self::installSql($sqlPath);
+                }
 
                 // 是否存在createTable.sql
                 $sqlPath = __DIR__ . '/createTable.sql';
@@ -86,6 +92,16 @@ class Install
             $adminMenuNames = self::getMenuNames($sqlPath);
             if ($adminMenuNames) {
                 Db::table(self::$dbConfig['DB_PREFIX'] . 'admin_menu')->where('name', 'in', $adminMenuNames)->delete();
+            }
+        }
+		
+		// config.sql，需要删除表中的设置数据
+        $sqlPath = __DIR__ . '/config.sql';
+        if (file_exists($sqlPath) && is_file($sqlPath)) {
+            // 提炼出安装的权限节点name
+            $configNames = self::getConfigNames($sqlPath);
+            if ($configNames) {
+                Db::table(self::$dbConfig['DB_PREFIX'] . 'config')->where('name', 'in', $configNames)->delete();
             }
         }
 
@@ -211,6 +227,61 @@ class Install
         }
         return $names;
     }
+	
+	/**
+     * 提炼config.sql中的插入设置的所有的name，卸载的时候用来删除
+     * @param string $sqlPath
+     * @return string[]
+     */
+    private static function getConfigNames(string $sqlPath) : array
+    {
+        $names = [];
+
+        $sqlContent = file_get_contents($sqlPath);
+        // 尝试分割 SQL 语句（注意：这只是一个简单的示例，可能不适用于所有情况）
+        $sqlStatements = explode(';', $sqlContent);
+        foreach ($sqlStatements as $sql) {
+            // 去除语句前后的空白字符
+            $sql = trim($sql);
+            // 跳过空语句
+            if (empty($sql)) {
+                continue;
+            }
+
+            // 查找 VALUES 关键字及其后面的内容
+            $valuesPart = substr($sql, strpos($sql, 'VALUES ') + strlen('VALUES '));
+
+            // 去掉前后的括号
+            $trimmedValuesPart = trim($valuesPart, '()');
+
+            // 将值列表按逗号分隔为数组
+            $valueArray = array_map('trim', explode(',', $trimmedValuesPart));
+
+            // 提取 INSERT INTO 部分的字段名
+            $fieldsPattern = '/INSERT INTO[^(]+\(([^)]+)\)/';
+            preg_match($fieldsPattern, $sql, $matches);
+
+            $fieldArray = [];
+            if (isset($matches[1])) {
+                // 使用逗号分隔字段名，并去除可能的空格和反引号
+                $fieldArray = array_map(function ($field)
+                {
+                    return trim($field, '` ');
+                }, explode(',', $matches[1]));
+            }
+
+
+            foreach ($fieldArray as $ks => $vs) {
+                if ($vs == 'name') {
+                    if (isset($valueArray[$ks]) && $valueArray[$ks]) {
+                        $names[] = trim($valueArray[$ks], "'");
+                    }
+                    break;
+                }
+            }
+        }
+        return $names;
+    }
 
     /**
      * 执行sql文件
@@ -220,7 +291,7 @@ class Install
     private static function installSql($sqlPath)
     {
         $sqlContent = file_get_contents($sqlPath);
-        // 尝试分割 SQL 语句（注意：这只是一个简单的示例，可能不适用于所有情况）
+        // 尝试分割 SQL 语句
         $sqlStatements = explode(';', $sqlContent);
         foreach ($sqlStatements as $sql) {
             // 去除语句前后的空白字符
