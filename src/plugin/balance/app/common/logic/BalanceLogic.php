@@ -4,7 +4,7 @@ namespace plugin\balance\app\common\logic;
 use plugin\balance\app\common\model\BalanceModel;
 use plugin\balance\app\common\validate\BalanceDetailsValidate;
 use plugin\balance\app\common\logic\BalanceDetailsLogic;
-use think\facade\Db;
+use support\think\Db;
 
 /**
  * 用户余额 逻辑层
@@ -51,24 +51,40 @@ class BalanceLogic
             if ($params['change_value'] == 0) {
                 throw new \Exception("变更余额的值不能等于0");
             }
-            $data = self::getUserBalance($params['user_id']);
+            $userBalance = self::getUserBalance($params['user_id']);
 
             // 增加余额
             if ($params['type'] == 1) {
-                $data->inc($params['balance_type'], $params['change_value'])->save();
+                BalanceModel::where('user_id', $params['user_id'])
+                    ->update([
+                        $params['balance_type'] => Db::raw("{$params['balance_type']}+{$params['change_value']}"),
+                    ]);
             }
-            // 减少余额
+            // 减少余额 可能允许负数
             if ($params['type'] == 2) {
+<<<<<<< HEAD
                 if ($params['change_value'] > $data[$params['balance_type']]) {
                     $tmp = self::findBalanceType($params['balance_type']);
                     throw new \Exception("{$tmp['title']}不足");
+=======
+                $bool = $params['change_value'] > $userBalance[$params['balance_type']];
+                // 是否允许余额为负数，false》不允许，true》允许
+                if (isset($params['isNegative']) && $params['isNegative'] == true) {
+                    $bool = false;
+>>>>>>> main
                 }
-                $data->dec($params['balance_type'], $params['change_value'])->save();
+                if ($bool) {
+                    $tmp = self::findBalanceType($params['balance_type']);
+                    throw new \Exception("{$tmp['title']}不足");
+                }
+                BalanceModel::where('user_id', $params['user_id'])
+                    ->update([
+                        $params['balance_type'] => Db::raw("{$params['balance_type']}-{$params['change_value']}"),
+                    ]);
             }
 
             // 增加明细
             BalanceDetailsLogic::create($params);
-
             Db::commit();
         } catch (\Exception $e) {
             Db::rollback();

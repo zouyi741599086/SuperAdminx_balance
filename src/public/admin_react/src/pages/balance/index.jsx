@@ -111,6 +111,7 @@ export default () => {
         {
             title: '操作',
             dataIndex: 'action',
+			search: false,
             render: (_, record) => <>
                 <Button
                     type="link"

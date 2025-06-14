@@ -30,55 +30,55 @@ class BalanceWithdrawModel extends BaseModel
     // 用户 搜索器
     public function searchUserIdAttr($query, $value, $data)
     {
-        ($value != null) && $query->where('user_id', '=', $value);
+        $query->where('user_id', '=', $value);
     }
 
     // 单号 搜索器
     public function searchOrdernoAttr($query, $value, $data)
     {
-        ($value != null) && $query->where('orderno', 'like', "%{$value}%");
+        $query->where('orderno', 'like', "%{$value}%");
     }
 
     // 状态 搜索器
     public function searchStatusAttr($query, $value, $data)
     {
-        ($value != null) && $query->where('status', '=', $value);
+        $query->where('status', '=', $value);
     }
 
     // 姓名 搜索器
     public function searchBankNameAttr($query, $value, $data)
     {
-        ($value != null) && $query->where('bank_name', 'like', "%{$value}%");
+        $query->where('bank_name', 'like', "%{$value}%");
     }
 
     // 银行 搜索器
     public function searchBankTitleAttr($query, $value, $data)
     {
-        ($value != null) && $query->where('bank_title', 'like', "%{$value}%");
+        $query->where('bank_title', 'like', "%{$value}%");
     }
 
     // 银行卡号 搜索器
     public function searchBankNumberAttr($query, $value, $data)
     {
-        ($value != null) && $query->where('bank_number', 'like', "%{$value}%");
+        $query->where('bank_number', 'like', "%{$value}%");
     }
 
     // 申请时间 搜索器
     public function searchCreateTimeAttr($query, $value, $data)
     {
-        ($value && is_array($value)) && $query->where('create_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
+        $query->where('create_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
     }
 
     // 审核时间 搜索器
     public function searchAuditTimeAttr($query, $value, $data)
     {
-        ($value && is_array($value)) && $query->where('audit_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
+        $query->where('audit_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
     }
 
     // 失败原因 搜索器
     public function searchReasonAttr($query, $value, $data)
     {
-        ($value != null) && $query->where('reason', 'like', "%{$value}%");
+        $query->where('reason', 'like', "%{$value}%");
     }
 
 

@@ -31,31 +31,31 @@ class BalanceDetailsModel extends BaseModel
     // 用户 搜索器
     public function searchUserIdAttr($query, $value, $data)
     {
-        ($value != null) && $query->where('user_id', '=', $value);
+        $query->where('user_id', '=', $value);
     }
 
     // 余额类型 搜索器
     public function searchBalanceTypeAttr($query, $value, $data)
     {
-        ($value != null) && $query->where('balance_type', '=', $value);
+        $query->where('balance_type', '=', $value);
     }
 
     // 标题 搜索器
     public function searchTitleAttr($query, $value, $data)
     {
-        ($value != null) && $query->where('title', 'like', "%{$value}%");
+        $query->where('title', 'like', "%{$value}%");
     }
 
     // 类型 搜索器
     public function searchTypeAttr($query, $value, $data)
     {
-        ($value != null) && $query->where('type', '=', $value);
+        $query->where('type', '=', $value);
     }
 
     // 变化时间 搜索器
     public function searchCreateTimeAttr($query, $value, $data)
     {
-        ($value && is_array($value)) && $query->where('create_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
+        $query->where('create_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
     }
 
     // 所属用户 关联模型

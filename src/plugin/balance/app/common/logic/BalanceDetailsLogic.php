@@ -18,7 +18,7 @@ class BalanceDetailsLogic
     /**
      * 列表
      * @param array $params get参数
-     * @param bool $page 是否需要翻页
+     * @param bool $page 是否需要翻页，不翻页返回模型
      * @param bool $filter 是否是用户端在调用
      * */
     public static function getList(array $params = [], bool $page = true, bool $filter = false)
@@ -42,7 +42,7 @@ class BalanceDetailsLogic
             ->with($with)
             ->order($orderBy);
 
-        return $page ? $list->paginate($params['pageSize'] ?? 20) : $list->select();
+        return $page ? $list->paginate($params['pageSize'] ?? 20) : $list;
     }
 
     /**
@@ -80,36 +80,26 @@ class BalanceDetailsLogic
             }
 
             // 表格头
-            $header = ['用户', '余额类型', '标题', '变更值', '变更后余额', '变化时间'];
+            $header = ['用户ID','用户手机号', '余额类型', '标题', '变更值', '变更后余额', '变化时间'];
 
-            $list    = self::getList($params, false);
+            $list    = self::getList($params, false)->cursor();
             $tmpList = [];
             foreach ($list as $v) {
                 // 导出的数据
                 $tmpList[] = [
-                    "{$v['User']['name']}/{$v['User']['tel']}",
+                    $v->User->id,
+                    $v->User->tel,
                     $balanceType[$v['balance_type']] ?? $v['balance_type'],
-                    $v['title'] ?? '',
-                    $v['type'] == 1 ? "+{$v['change_value']}" : "-{$v['change_value']}",
-                    $v['change_balance'] ?? '',
-                    $v['create_time'] ?? '',
+                    $v->title ?? '',
+                    $v->type == 1 ? $v->change_value : "-{$v->change_value}",
+                    $v->change_balance ?? '',
+                    $v->create_time ?? '',
                 ];
             }
-            // 开始生成表格导出
-            $config   = [
-                'path' => public_path() . '/tmp_file',
-            ];
-            $fileName = "用户余额明细.xlsx";
-            $excel    = new \Vtiful\Kernel\Excel($config);
-            $filePath = $excel->fileName(rand(1, 10000) . time() . '.xlsx')
-                ->header($header)
-                ->data($tmpList)
-                ->output();
-            $excel->close();
 
             return [
-                'filePath' => str_replace(public_path(), '', $filePath),
-                'fileName' => $fileName
+                'filePath' => export($header, $tmpList),
+                'fileName' => "用户{$balanceTypeTitle}明细.xlsx"
             ];
         } catch (\Exception $e) {
             abort($e->getMessage());
