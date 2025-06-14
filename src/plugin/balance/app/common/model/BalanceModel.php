@@ -30,13 +30,13 @@ class BalanceModel extends BaseModel
     // 所属用户 搜索器
     public function searchUserIdAttr($query, $value, $data)
     {
-        ($value != null) && $query->where('user_id', '=', $value);
+        $query->where('user_id', '=', $value);
     }
 
     // 更新时间 搜索器
     public function searchUpdateTimeAttr($query, $value, $data)
     {
-        ($value && is_array($value)) && $query->where('update_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
+        $query->where('update_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
     }
 
     // 所属用户 关联模型

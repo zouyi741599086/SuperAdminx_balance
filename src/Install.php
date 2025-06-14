@@ -15,6 +15,7 @@ class Install
         '/plugin/balance'                               => '/plugin/balance',
         '/public/admin_react/src/api/balance.js'        => '/public/admin_react/src/api/balance.js',
         '/public/admin_react/src/api/balanceDetails.js' => '/public/admin_react/src/api/balanceDetails.js',
+        '/public/admin_react/src/api/balanceWithdraw.js' => '/public/admin_react/src/api/balanceWithdraw.js',
         '/public/admin_react/src/pages/balance'         => '/public/admin_react/src/pages/balance',
     ];
 

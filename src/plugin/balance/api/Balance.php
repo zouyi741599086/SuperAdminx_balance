@@ -18,9 +18,10 @@ class Balance
      * @param string $balanceType 余额类型，看config/superadminx.php里面的余额配置
      * @param float|int $changeValue 变化的值，正数为加，负数为减少
      * @param string $title 变更的原因
+	 * @param bool $isNegative 是否允许修改为负数
      * @return void
      */
-    public static function change(int $userId, string $balanceType, float|int $changeValue, string $title) : void
+    public static function change(int $userId, string $balanceType, float|int $changeValue, string $title, bool $isNegative = false) : void
     {
         try {
             // 检查余额类型
@@ -36,6 +37,7 @@ class Balance
                 'change_value' => $changeValue > 0 ? $changeValue : $changeValue * -1,
                 'balance_type' => $balanceType,
                 'title'        => $title,
+				'isNegative'   => $isNegative,
             ]);
         } catch (\Exception $e) {
             abort($e->getMessage());
