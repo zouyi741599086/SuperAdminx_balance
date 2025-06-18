@@ -2,6 +2,7 @@
 namespace plugin\balance\app\common\model;
 
 use app\common\model\BaseModel;
+use app\common\model\UserModel;
 
 /**
  * 用户余额 模型
@@ -26,7 +27,6 @@ class BalanceModel extends BaseModel
     protected $file = [
     ];
 
-
     // 所属用户 搜索器
     public function searchUserIdAttr($query, $value, $data)
     {
@@ -42,7 +42,7 @@ class BalanceModel extends BaseModel
     // 所属用户 关联模型
     public function User()
     {
-        return $this->belongsTo(\app\common\model\UserModel::class);
+        return $this->belongsTo(UserModel::class);
     }
 
 }

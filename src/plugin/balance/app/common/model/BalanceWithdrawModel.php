@@ -2,6 +2,7 @@
 namespace plugin\balance\app\common\model;
 
 use app\common\model\BaseModel;
+use app\common\model\UserModel;
 
 /**
  * 余额提现 模型
@@ -85,7 +86,7 @@ class BalanceWithdrawModel extends BaseModel
     // 所属用户 关联模型
     public function User()
     {
-        return $this->belongsTo(\app\common\model\UserModel::class);
+        return $this->belongsTo(UserModel::class);
     }
 
 }

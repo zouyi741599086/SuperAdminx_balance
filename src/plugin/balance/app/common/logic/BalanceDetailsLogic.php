@@ -38,7 +38,7 @@ class BalanceDetailsLogic
             $with = [];
         }
 
-        $list = BalanceDetailsModel::withSearch(['user_id', 'balance_type', 'title', 'type', 'create_time'], $params)
+        $list = BalanceDetailsModel::withSearch(['user_id', 'balance_type', 'title', 'create_time'], $params)
             ->with($with)
             ->order($orderBy);
 
@@ -79,9 +79,6 @@ class BalanceDetailsLogic
                 $balanceType[$v['field']] = $v['title'];
             }
 
-            // 表格头
-            $header = ['用户ID','用户手机号', '余额类型', '标题', '变更值', '变更后余额', '变化时间'];
-
             $list    = self::getList($params, false)->cursor();
             $tmpList = [];
             foreach ($list as $v) {
@@ -91,12 +88,14 @@ class BalanceDetailsLogic
                     $v->User->tel,
                     $balanceType[$v['balance_type']] ?? $v['balance_type'],
                     $v->title ?? '',
-                    $v->type == 1 ? $v->change_value : "-{$v->change_value}",
+                    $v->change_value,
                     $v->change_balance ?? '',
                     $v->create_time ?? '',
                 ];
             }
 
+            // 表格头
+            $header = ['用户ID','用户手机号', '余额类型', '标题', '变更值', '变更后余额', '变化时间'];
             return [
                 'filePath' => export($header, $tmpList),
                 'fileName' => "用户{$balanceTypeTitle}明细.xlsx"

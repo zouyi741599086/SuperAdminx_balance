@@ -17,7 +17,6 @@ class BalanceDetailsValidate extends Validate
         'user_id|用户'        => 'require',
         'balance_type|余额类型' => 'require',
         'title|标题'          => 'require',
-        'type|类型'           => 'require',
         'change_value|变更值'  => 'require',
     ];
 

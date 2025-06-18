@@ -51,18 +51,11 @@ class BalanceLogic
             if ($params['change_value'] == 0) {
                 throw new \Exception("变更余额的值不能等于0");
             }
-            $userBalance = self::getUserBalance($params['user_id']);
 
-            // 增加余额
-            if ($params['type'] == 1) {
-                BalanceModel::where('user_id', $params['user_id'])
-                    ->update([
-                        $params['balance_type'] => Db::raw("{$params['balance_type']}+{$params['change_value']}"),
-                    ]);
-            }
-            // 减少余额 可能允许负数
-            if ($params['type'] == 2) {
-                $bool = $params['change_value'] > $userBalance[$params['balance_type']];
+            // 减少余额 同时不允许修改为负数
+            if ($params['change_value'] < 0 && isset($params['isNegative']) && $params['isNegative'] == false) {
+                $userBalance = self::getUserBalance($params['user_id']);
+                $bool        = ($params['change_value'] * -1) > $userBalance[$params['balance_type']];
                 // 是否允许余额为负数，false》不允许，true》允许
                 if (isset($params['isNegative']) && $params['isNegative'] == true) {
                     $bool = false;
@@ -71,12 +64,27 @@ class BalanceLogic
                     $tmp = self::findBalanceType($params['balance_type']);
                     throw new \Exception("{$tmp['title']}不足");
                 }
-                BalanceModel::where('user_id', $params['user_id'])
-                    ->update([
-                        $params['balance_type'] => Db::raw("{$params['balance_type']}-{$params['change_value']}"),
-                    ]);
             }
 
+            // 有数据则更新，没得则新增
+            $dbPrefix = getenv('DB_PREFIX');
+            $dateTime = date('Y-m-d H:i:s');
+            Db::execute(
+                "INSERT INTO `{$dbPrefix}balance` (`user_id`, `{$params['balance_type']}`, `create_time`, `update_time`) 
+                    VALUES (?, ?, ?, ?) 
+                    ON DUPLICATE KEY UPDATE 
+                    `{$params['balance_type']}` = `{$params['balance_type']}` + ?,`update_time` = ?
+                    ",
+                [
+                    $params['user_id'],
+                    $params['change_value'],
+                    $dateTime,
+                    $dateTime,
+                    $params['change_value'],
+                    $dateTime
+                ]
+            );
+            
             // 增加明细
             BalanceDetailsLogic::create($params);
             Db::commit();
@@ -133,12 +141,7 @@ class BalanceLogic
     {
         try {
             $balanceTypeList = config('superadminx.balance_type');
-            // 表格头
-            $header = array_merge(
-                ['用户'],
-                array_column($balanceTypeList, 'title'),
-                ['变更时间']
-            );
+
             $list    = self::getList($params, false);
             $tmpList = [];
             foreach ($list as $v) {
@@ -154,21 +157,16 @@ class BalanceLogic
                 $tmp[]     = $v['update_time'] ?? '';
                 $tmpList[] = $tmp;
             }
-            // 开始生成表格导出
-            $config   = [
-                'path' => public_path() . '/tmp_file',
-            ];
-            $fileName = "用户余额.xlsx";
-            $excel    = new \Vtiful\Kernel\Excel($config);
-            $filePath = $excel->fileName(rand(1, 10000) . time() . '.xlsx')
-                ->header($header)
-                ->data($tmpList)
-                ->output();
-            $excel->close();
 
+            // 表格头
+            $header = array_merge(
+                ['用户'],
+                array_column($balanceTypeList, 'title'),
+                ['变更时间']
+            );
             return [
-                'filePath' => str_replace(public_path(), '', $filePath),
-                'fileName' => $fileName
+                'filePath' => export($header, $tmpList),
+                'fileName' => "用户余额.xlsx"
             ];
         } catch (\Exception $e) {
             abort($e->getMessage());

@@ -5,6 +5,7 @@ use plugin\balance\app\common\model\BalanceWithdrawModel;
 use plugin\balance\app\common\logic\BalanceLogic;
 use plugin\balance\app\common\validate\BalanceWithdrawValidate;
 use plugin\balance\api\Balance;
+use app\common\logic\ConfigLogic;
 use think\facade\Db;
 
 /**
@@ -66,7 +67,7 @@ class BalanceWithdrawLogic
             Balance::change($params['user_id'], $params['balance_type'], -$params['money'], '提现申请');
             
             // 提现的相关配置
-            $config = \app\common\logic\ConfigLogic::getConfig('balance_withdraw_config');
+            $config = ConfigLogic::getConfig('balance_withdraw_config');
 
             if ($params['money'] < $config['min']) {
                 abort('提现金额不能低于' . $config['min']);
@@ -188,9 +189,6 @@ class BalanceWithdrawLogic
     public static function exportData(array $params)
     {
         try {
-            // 表格头
-            $header = ['用户', '单号', '状态', '提现金额', '手续费', '到账金额', '姓名', '银行', '银行卡号', '申请时间', '审核时间', '打款时间', '失败原因'];
-
             $list    = self::getList($params, false);
             $tmpList = [];
             foreach ($list as $v) {
@@ -230,21 +228,12 @@ class BalanceWithdrawLogic
                     $v['reason'] ?? '',
                 ];
             }
-            // 开始生成表格导出
-            $config   = [
-                'path' => public_path() . '/tmp_file',
-            ];
-            $fileName = "余额提现.xlsx";
-            $excel    = new \Vtiful\Kernel\Excel($config);
-            $filePath = $excel->fileName(rand(1, 10000) . time() . '.xlsx')
-                ->header($header)
-                ->data($tmpList)
-                ->output();
-            $excel->close();
 
+            // 表格头
+            $header = ['用户', '单号', '状态', '提现金额', '手续费', '到账金额', '姓名', '银行', '银行卡号', '申请时间', '审核时间', '打款时间', '失败原因'];
             return [
-                'filePath' => str_replace(public_path(), '', $filePath),
-                'fileName' => $fileName
+                'filePath' => export($header, $tmpList),
+                'fileName' => "余额提现.xlsx"
             ];
         } catch (\Exception $e) {
             abort($e->getMessage());

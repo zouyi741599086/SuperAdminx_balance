@@ -46,12 +46,6 @@ class BalanceDetailsModel extends BaseModel
         $query->where('title', 'like', "%{$value}%");
     }
 
-    // 类型 搜索器
-    public function searchTypeAttr($query, $value, $data)
-    {
-        $query->where('type', '=', $value);
-    }
-
     // 变化时间 搜索器
     public function searchCreateTimeAttr($query, $value, $data)
     {
