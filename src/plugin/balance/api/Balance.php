@@ -33,8 +33,7 @@ class Balance
 
             BalanceLogic::updateBalance([
                 'user_id'      => $userId,
-                'type'         => $changeValue > 0 ? 1 : 2,
-                'change_value' => $changeValue > 0 ? $changeValue : $changeValue * -1,
+                'change_value' => $changeValue,
                 'balance_type' => $balanceType,
                 'title'        => $title,
 				'isNegative'   => $isNegative,
@@ -50,7 +49,7 @@ class Balance
      * @param string $balanceType 余额类型，看config/superadminx.php里面的余额配置
      * @return mixed
      */
-    public static function get(int $userId, string $balanceType = null) 
+    public static function get(int $userId, ?string $balanceType = null) 
     {
         $balance = BalanceLogic::getUserBalance($userId);
         if ($balanceType) {

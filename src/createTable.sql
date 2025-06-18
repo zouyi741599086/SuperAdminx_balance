@@ -16,7 +16,6 @@ CREATE TABLE `sa_balance_details` (
   `user_id` int(11) NOT NULL COMMENT '所属用户',
   `balance_type` varchar(45) DEFAULT NULL COMMENT '变化的余额类型，对应balance表的字段',
   `title` varchar(200) DEFAULT NULL COMMENT '标题',
-  `type` tinyint(1) DEFAULT '1' COMMENT '变化的类型，1》增加，2》减少',
   `change_value` decimal(10,2) DEFAULT '0.00' COMMENT '本次变化的值',
   `change_balance` decimal(10,2) DEFAULT '0.00' COMMENT '变化后的余额',
   `create_time` datetime DEFAULT NULL,
