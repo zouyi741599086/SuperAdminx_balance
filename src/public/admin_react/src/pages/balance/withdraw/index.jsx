@@ -152,7 +152,7 @@ export default () => {
                     <Button
                         type="link"
                         size="small"
-                        disabled={authCheck('balanceWithdrawalInfo')}
+                        disabled={authCheck('balanceWithdrawInfo')}
                         onClick={() => {
                             setInfoId(record.id);
                         }}
@@ -164,19 +164,19 @@ export default () => {
                             onConfirm={() => {
                                 updateStatus([record.id], 4);
                             }}
-                            disabled={authCheck('balanceWithdrawalUpdateStatus')}
+                            disabled={authCheck('balanceWithdrawUpdateStatus')}
                         >
                             <Button
                                 type="link"
                                 size="small"
-                                disabled={authCheck('balanceWithdrawalUpdateStatus')}
+                                disabled={authCheck('balanceWithdrawUpdateStatus')}
                             >审核通过</Button>
                         </Popconfirm>
                         <Button
                             type="link"
                             size="small"
                             danger
-                            disabled={authCheck('balanceWithdrawalUpdateStatus')}
+                            disabled={authCheck('balanceWithdrawUpdateStatus')}
                             onClick={() => {
                                 setUpdateStatusValue(6);
                                 setUpdateId([record.id]);
@@ -189,19 +189,19 @@ export default () => {
                             onConfirm={() => {
                                 updateStatus([record.id], 8);
                             }}
-                            disabled={authCheck('balanceWithdrawalUpdateStatus')}
+                            disabled={authCheck('balanceWithdrawUpdateStatus')}
                         >
                             <Button
                                 type="link"
                                 size="small"
-                                disabled={authCheck('balanceWithdrawalUpdateStatus')}
+                                disabled={authCheck('balanceWithdrawUpdateStatus')}
                             >已打款</Button>
                         </Popconfirm>
                         <Button
                             type="link"
                             size="small"
                             danger
-                            disabled={authCheck('balanceWithdrawalUpdateStatus')}
+                            disabled={authCheck('balanceWithdrawUpdateStatus')}
                             onClick={() => {
                                 setUpdateStatusValue(10);
                                 setUpdateId([record.id]);
@@ -251,7 +251,7 @@ export default () => {
                                     ghost
                                     icon={<CloudDownloadOutlined />}
                                     onClick={exportExcel}
-                                    disabled={authCheck('balanceWithdrawalExportData')}
+                                    disabled={authCheck('balanceWithdrawExportData')}
                                 >导出</Button>
                             </Tooltip>
                         </Space>
@@ -278,19 +278,19 @@ export default () => {
                                     onConfirm={() => {
                                         updateStatus(selectedRowKeys, 4);
                                     }}
-                                    disabled={authCheck('balanceWithdrawalUpdateStatus')}
+                                    disabled={authCheck('balanceWithdrawUpdateStatus')}
                                 >
                                     <Button
                                         type="link"
                                         size="small"
-                                        disabled={authCheck('balanceWithdrawalUpdateStatus')}
+                                        disabled={authCheck('balanceWithdrawUpdateStatus')}
                                     >批量审核通过</Button>
                                 </Popconfirm>
                                 <Button
                                     type="link"
                                     size="small"
                                     danger
-                                    disabled={authCheck('balanceWithdrawalUpdateStatus')}
+                                    disabled={authCheck('balanceWithdrawUpdateStatus')}
                                     onClick={() => {
                                         setUpdateStatusValue(6);
                                         setUpdateId(selectedRowKeys);
@@ -301,19 +301,19 @@ export default () => {
                                     onConfirm={() => {
                                         updateStatus(selectedRowKeys, 8);
                                     }}
-                                    disabled={authCheck('balanceWithdrawalUpdateStatus')}
+                                    disabled={authCheck('balanceWithdrawUpdateStatus')}
                                 >
                                     <Button
                                         type="link"
                                         size="small"
-                                        disabled={authCheck('balanceWithdrawalUpdateStatus')}
+                                        disabled={authCheck('balanceWithdrawUpdateStatus')}
                                     >批量已打款</Button>
                                 </Popconfirm>
                                 <Button
                                     type="link"
                                     size="small"
                                     danger
-                                    disabled={authCheck('balanceWithdrawalUpdateStatus')}
+                                    disabled={authCheck('balanceWithdrawUpdateStatus')}
                                     onClick={() => {
                                         setUpdateStatusValue(8);
                                         setUpdateId(selectedRowKeys);

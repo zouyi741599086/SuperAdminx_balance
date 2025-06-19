@@ -70,6 +70,7 @@ class BalanceLogic
                 $bool = $params['change_value'] > $userBalance[$params['balance_type']];
 =======
             // 减少余额 同时不允许修改为负数
+<<<<<<< HEAD
             if ($params['change_value'] < 0 && isset($params['isNegative']) && $params['isNegative'] == false) {
                 $userBalance = self::getUserBalance($params['user_id']);
                 $bool        = ($params['change_value'] * -1) > $userBalance[$params['balance_type']];
@@ -82,6 +83,16 @@ class BalanceLogic
                 if ($bool) {
                     $tmp = self::findBalanceType($params['balance_type']);
                     throw new \Exception("{$tmp['title']}不足");
+=======
+            if ($params['change_value'] < 0) {
+                // 如果不允许负余额，则需要检查余额是否足够
+                if (! isset($params['isNegative']) || $params['isNegative'] == false) {
+                    $userBalance = self::getUserBalance($params['user_id']);
+                    if (($params['change_value'] * -1) > $userBalance[$params['balance_type']]) {
+                        $tmp = self::findBalanceType($params['balance_type']);
+                        throw new \Exception("{$tmp['title']}不足");
+                    }
+>>>>>>> main
                 }
             }
 
