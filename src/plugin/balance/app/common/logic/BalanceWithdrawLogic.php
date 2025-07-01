@@ -19,7 +19,7 @@ class BalanceWithdrawLogic
     /**
      * 列表
      * @param array $params get参数
-     * @param bool $page 是否需要翻页
+     * @param bool $page 是否需要翻页，不翻页返回模型
      * @param bool $filter 是否是用户端在调用
      * */
     public static function getList(array $params = [], bool $page = true, bool $filter = false)
@@ -40,11 +40,10 @@ class BalanceWithdrawLogic
         }
 
         $list = BalanceWithdrawModel::withSearch(['user_id', 'orderno', 'status', 'bank_name', 'bank_title', 'bank_number', 'create_time', 'audit_time', 'reason'], $params)
-            ->withoutField('update_time,audit_time,pay_time,reason')
             ->with($with)
             ->order($orderBy);
 
-        return $page ? $list->paginate($params['pageSize'] ?? 20) : $list->select();
+        return $page ? $list->paginate($params['pageSize'] ?? 20) : $list;
     }
 
     /**
@@ -65,16 +64,16 @@ class BalanceWithdrawLogic
 
             // 减少余额
             Balance::change($params['user_id'], $params['balance_type'], -$params['money'], '提现申请');
-            
+
             // 提现的相关配置
             $config = ConfigLogic::getConfig('balance_withdraw_config');
 
-            if ($params['money'] < $config['min']) {
-                abort('提现金额不能低于' . $config['min']);
+            if ($params['money'] < $config->min_money) {
+                abort('提现金额不能低于' . $config->min_money);
             }
 
             // 提现的手续费
-            $params['shouxufei'] = d2($params['money'] * $config['shouxufei_bili'] / 100);
+            $params['shouxufei'] = d2($params['money'] * $config->shouxufei_bili / 100);
             $params['on_money']  = $params['money'] - $params['shouxufei'];
             $params['orderno']   = get_order_no('TX');
 
@@ -94,6 +93,15 @@ class BalanceWithdrawLogic
     public static function findData(int $id, array $with = ['User'])
     {
         return BalanceWithdrawModel::with($with)->find($id);
+    }
+
+    /**
+     * 获取最后一次提现的详情
+     * @param int $userId 用户id
+     */
+    public static function getLastInfo(int $userId)
+    {
+        return BalanceWithdrawModel::where('user_id', $userId)->order('id', 'desc')->find();
     }
 
     /**
@@ -142,7 +150,7 @@ class BalanceWithdrawLogic
             }
 
             //已打款
-            if ($status == 8) {
+            if ($status == 7) {
                 BalanceWithdrawModel::where('id', 'in', $id)
                     ->where('status', 4)
                     ->update([
@@ -151,9 +159,21 @@ class BalanceWithdrawLogic
                     ]);
             }
 
-            //打开失败
+            //打款成功
+            if ($status == 8) {
+                BalanceWithdrawModel::where('id', 'in', $id)
+                    //->where('status', 4)
+                    ->update([
+                        'status' => $status,
+                        //'pay_time' => date('Y-m-d H:i:s'), // 如果是后台直接操作打款成功，则需要加上打款时间
+                    ]);
+            }
+
+            //打款失败
             if ($status == 10) {
-                $id = BalanceWithdrawModel::where('id', 'in', $id)->where('status', 4)->column('id');
+                $id = BalanceWithdrawModel::where('id', 'in', $id)
+                    //->where('status', 4)
+                    ->column('id');
                 //更改状态
                 BalanceWithdrawModel::where('id', 'in', $id)
                     ->update([
@@ -189,7 +209,10 @@ class BalanceWithdrawLogic
     public static function exportData(array $params)
     {
         try {
-            $list    = self::getList($params, false);
+            // 表格头
+            $header = ['用户', '单号', '状态', '提现金额', '手续费', '到账金额', '姓名', '银行', '银行卡号', '申请时间', '审核时间', '打款时间', '失败原因'];
+
+            $list    = self::getList($params, false)->cursor();
             $tmpList = [];
             foreach ($list as $v) {
 
@@ -203,10 +226,13 @@ class BalanceWithdrawLogic
                     case 6:
                         $v['status'] = '审核拒绝';
                         break;
-                    case 8:
-                        $v['status'] = '已打款';
+                    case 7:
+                        $v['status'] = '打款中';
                         break;
                     case 8:
+                        $v['status'] = '打款成功';
+                        break;
+                    case 10:
                         $v['status'] = '打款失败';
                         break;
                 }
@@ -229,8 +255,6 @@ class BalanceWithdrawLogic
                 ];
             }
 
-            // 表格头
-            $header = ['用户', '单号', '状态', '提现金额', '手续费', '到账金额', '姓名', '银行', '银行卡号', '申请时间', '审核时间', '打款时间', '失败原因'];
             return [
                 'filePath' => export($header, $tmpList),
                 'fileName' => "余额提现.xlsx"

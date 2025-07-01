@@ -31,7 +31,7 @@ class BalanceWithdraw
     public function getList(Request $request) : Response
     {
         $params            = $request->get();
-        $params['user_id'] = $request->user['id'];
+        $params['user_id'] = $request->user->id;
 
         $list = BalanceWithdrawLogic::getList($params, true, true);
         return success($list);
@@ -46,7 +46,7 @@ class BalanceWithdraw
     public function create(Request $request) : Response
     {
         $params = $request->post();
-        $params['user_id'] = $request->user['id'];
+        $params['user_id'] = $request->user->id;
 
         BalanceWithdrawLogic::create($params);
         return success([], '申请成功');
@@ -61,7 +61,7 @@ class BalanceWithdraw
     public function findData(Request $request, int $id) : Response
     {
         $data = BalanceWithdrawLogic::findData($id, []);
-        if (! $data || $data['user_id'] != $request->user['id']) {
+        if (! $data || $data['user_id'] != $request->user->id) {
             return error('参数错误');
         }
         return success($data);

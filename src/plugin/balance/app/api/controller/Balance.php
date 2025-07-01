@@ -30,7 +30,7 @@ class Balance
      */
     public function get(Request $request): Response
     {
-        $data = BalanceLogic::getUserBalance($request->user['id']);
+        $data = BalanceLogic::getUserBalance($request->user->id);
         return success(data: $data);
     }
 }

@@ -152,15 +152,13 @@ class BalanceLogic
                     $tmp[] = $v[$val['field']] ?? 0;
                 }
 
-                $tmp[]     = $v['update_time'] ?? '';
                 $tmpList[] = $tmp;
             }
 
             // 表格头
             $header = array_merge(
                 ['用户'],
-                array_column($balanceTypeList, 'title'),
-                ['变更时间']
+                array_column($balanceTypeList, 'title')
             );
             return [
                 'filePath' => export($header, $tmpList),
