@@ -32,7 +32,7 @@ class BalanceDetails
     public function getList(Request $request) : Response
     {
         $params            = $request->get();
-        $params['user_id'] = $request->user['id'];
+        $params['user_id'] = $request->user->id;
         if (! isset($params['balance_type'])) {
             return error('参数错误');
         }

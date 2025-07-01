@@ -101,14 +101,6 @@ export default () => {
             },
         },
         {
-            title: '变更时间',
-            dataIndex: 'update_time',
-            search: true,
-            sorter: true,
-            valueType: 'dateRange',
-            render: (_, record) => record.create_time,
-        },
-        {
             title: '操作',
             dataIndex: 'action',
 			search: false,
