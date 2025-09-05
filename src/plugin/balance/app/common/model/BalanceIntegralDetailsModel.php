@@ -2,6 +2,7 @@
 namespace plugin\balance\app\common\model;
 
 use app\common\model\BaseModel;
+use plugin\user\app\common\model\UserModel;
 
 /**
  * 用户余额明细 模型
@@ -9,14 +10,14 @@ use app\common\model\BaseModel;
  * @author zy <741599086@qq.com>
  * @link https://www.superadminx.com/
  * */
-class BalanceDetailsModel extends BaseModel
+class BalanceIntegralDetailsModel extends BaseModel
 {
 
     // 表名
-    protected $name = 'balance_details';
+    protected $name = 'balance_integral_details';
 
     // 自动时间戳
-    protected $autoWriteTimestamp = true;
+    protected $updateTime = false;
 
     // 字段类型转换
     protected $type = [
@@ -34,10 +35,10 @@ class BalanceDetailsModel extends BaseModel
         $query->where('user_id', '=', $value);
     }
 
-    // 余额类型 搜索器
-    public function searchBalanceTypeAttr($query, $value, $data)
+    // 明细类型 搜索器
+    public function searchDetailsTypeAttr($query, $value, $data)
     {
-        $query->where('balance_type', '=', $value);
+        $query->where('details_type', '=', $value);
     }
 
     // 标题 搜索器
@@ -52,10 +53,16 @@ class BalanceDetailsModel extends BaseModel
         $query->where('create_time', 'between', ["{$value[0]} 00:00:00", "{$value[1]} 23:59:59"]);
     }
 
+    // 变化时间小于 搜索器
+    public function searchCreateTimeLtAttr($query, $value, $data)
+    {
+        $query->where('create_time', '<', $value);
+    }
+
     // 所属用户 关联模型
     public function User()
     {
-        return $this->belongsTo(\app\common\model\UserModel::class);
+        return $this->belongsTo(UserModel::class);
     }
 
 }

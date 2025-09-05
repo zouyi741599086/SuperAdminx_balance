@@ -2,7 +2,7 @@
 namespace plugin\balance\app\common\model;
 
 use app\common\model\BaseModel;
-use app\common\model\UserModel;
+use plugin\user\app\common\model\UserModel;
 
 /**
  * 余额提现 模型

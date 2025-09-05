@@ -3,7 +3,6 @@ namespace plugin\balance\app\admin\controller;
 
 use support\Request;
 use support\Response;
-
 use plugin\balance\app\common\logic\BalanceLogic;
 
 /**
@@ -44,7 +43,20 @@ class Balance
      */
     public function getBalanceType(Request $request)
     {
-        return success(config('superadminx.balance_type'));
+        return success(config('plugin.balance.superadminx.balance_type'));
+    }
+
+    /**
+     * 获取余额的明细类型的配置
+     * @method get
+     * @param Request $request 
+     * @param string $balance_type
+     * @return Response
+     */
+    public function getDetailsType(Request $request, string $balance_type)
+    {
+        $data = BalanceLogic::getDetailsType($balance_type);
+        return success($data);
     }
 
     /**
@@ -70,6 +82,18 @@ class Balance
     public function exportData(Request $request): Response
     {
         $data = BalanceLogic::exportData($request->get());
+        return success($data);
+    }
+
+    /**
+     * 统计余额
+     * @method get
+     * @param Request $request 
+     * @return Response
+     */
+    public function getTotal(Request $request) : Response
+    {
+        $data = BalanceLogic::getTotal();
         return success($data);
     }
 
