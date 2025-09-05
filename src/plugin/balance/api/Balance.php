@@ -15,29 +15,34 @@ class Balance
     /**
      * 变更用户余额
      * @param int $userId 用户id
-     * @param string $balanceType 余额类型，看config/superadminx.php里面的余额配置
      * @param float|int $changeValue 变化的值，正数为加，负数为减少
+     * @param string $balanceType 余额类型，看config/superadminx.php里面的余额配置
+     * @param string $detailType 明细变动类型，看config/superadminx.php里面的余额配置
      * @param string $title 变更的原因
-	 * @param bool $isNegative 是否允许修改为负数
+     * @param bool $isNegative 是否允许修改为负数
      * @return void
      */
-    public static function change(int $userId, string $balanceType, float|int $changeValue, string $title, bool $isNegative = false) : void
-    {
+    public static function change(
+        int $userId,
+        float|int $changeValue,
+        string $balanceType,
+        string $detailsType,
+        string $title,
+        bool $isNegative = false,
+    ) : void {
         try {
-            // 检查余额类型
-            BalanceLogic::findBalanceType($balanceType);
-            
-            if ($changeValue == 0) {
-                throw new \Exception("变更余额的值不能等于0");
-            }
+            if ($changeValue != 0) {
+                $params = [
+                    'user_id'      => $userId,
+                    'change_value' => $changeValue,
+                    'balance_type' => $balanceType,
+                    'details_type' => $detailsType,
+                    'title'        => $title,
+                    'isNegative'   => $isNegative,
+                ];
 
-            BalanceLogic::updateBalance([
-                'user_id'      => $userId,
-                'change_value' => $changeValue,
-                'balance_type' => $balanceType,
-                'title'        => $title,
-				'isNegative'   => $isNegative,
-            ]);
+                BalanceLogic::updateBalance($params);
+            }
         } catch (\Exception $e) {
             abort($e->getMessage());
         }

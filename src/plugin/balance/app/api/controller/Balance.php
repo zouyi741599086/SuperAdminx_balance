@@ -33,4 +33,15 @@ class Balance
         $data = BalanceLogic::getUserBalance($request->user->id);
         return success(data: $data);
     }
+
+    /**
+     * 获取余额类型的配置
+     * @method get
+     * @param Request $request 
+     * @return Response
+     */
+    public function getBalanceType(Request $request)
+    {
+        return success(config('plugin.balance.superadminx.balance_type'));
+    }
 }

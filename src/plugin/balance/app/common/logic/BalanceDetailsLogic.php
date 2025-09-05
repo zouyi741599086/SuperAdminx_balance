@@ -1,7 +1,6 @@
 <?php
 namespace plugin\balance\app\common\logic;
 
-use plugin\balance\app\common\model\BalanceDetailsModel;
 use plugin\balance\app\common\model\BalanceModel;
 use plugin\balance\app\common\validate\BalanceDetailsValidate;
 use think\facade\Db;
@@ -14,6 +13,38 @@ use think\facade\Db;
  * */
 class BalanceDetailsLogic
 {
+    /**
+     * 根据余额类型获取对应的余额明细的模型
+     * @param string $balanceType 余额类型
+     * @param string $submeterMonth 分表的月份，如2025-01
+     */
+    public static function getModel(string $balanceType, ?string $submeterMonth = null)
+    {
+        if (! $balanceType) {
+            abort('余额模型类型错误');
+        }
+        // 使用空格替换字符串中的下划线  
+        $balanceTypeModel = str_replace('_', ' ', $balanceType);
+        // 使用ucwords函数将字符串中的每个单词首字母转换为大写  
+        $balanceTypeModel = ucwords($balanceTypeModel);
+        // 将空格替换为空，实现驼峰命名  
+        $balanceTypeModel = str_replace(' ', '', $balanceTypeModel);
+
+        $path  = "\\plugin\\balance\\app\\common\\model\\Balance{$balanceTypeModel}DetailsModel";
+        $model = new $path();
+
+        // 判断是否有使用分表
+        $balanceTypeList = config('plugin.balance.superadminx.balance_type', 'array');
+        foreach ($balanceTypeList as $key => $value) {
+            if ($value['field'] == $balanceType && isset($value['submeter_start_month']) && $value['submeter_start_month']) {
+                $date   = \DateTime::createFromFormat('Y-m', $submeterMonth ?: date('Y-m'));
+                $suffix = '_' . $date->format('y') . $date->format('m');
+                break;
+            }
+        }
+
+        return $model::suffix($suffix ?? '');
+    }
 
     /**
      * 列表
@@ -38,7 +69,8 @@ class BalanceDetailsLogic
             $with = [];
         }
 
-        $list = BalanceDetailsModel::withSearch(['user_id', 'balance_type', 'title', 'create_time'], $params)
+        $list = (self::getModel($params['balance_type'], $params['submeter_month'] ?? null))
+            ->withSearch(['user_id', 'title', 'details_type', 'create_time'], $params)
             ->with($with)
             ->order($orderBy);
 
@@ -51,17 +83,18 @@ class BalanceDetailsLogic
      */
     public static function create(array $params)
     {
-        Db::startTrans();
         try {
             validate(BalanceDetailsValidate::class)->check($params);
 
-            // 变化后的余额
-            $params['change_balance'] = BalanceModel::where('user_id', $params['user_id'])->value($params['balance_type']);
-            BalanceDetailsModel::create($params);
-
-            Db::commit();
+            $model = self::getModel($params['balance_type']);
+            $model->save([
+                ...$params,
+                ...[
+                    'change_balance' => BalanceModel::where('user_id', $params['user_id'])->value($params['balance_type'])
+                ]
+            ]);
         } catch (\Exception $e) {
-            Db::rollback();
+            var_dump($e);
             abort($e->getMessage());
         }
     }
@@ -73,21 +106,29 @@ class BalanceDetailsLogic
     public static function exportData(array $params)
     {
         try {
-            $balanceTypeList = config('superadminx.balance_type');
-            $balanceType     = [];
+            $balanceTypeList  = config('plugin.balance.superadminx.balance_type');
+            $balanceTypeTitle = '';
+            $detailsTypeList  = [];
             foreach ($balanceTypeList as $v) {
-                $balanceType[$v['field']] = $v['title'];
+                if ($v['field'] == $params['balance_type']) {
+                    $balanceTypeTitle = $v['title'];
+                    $detailsTypeList  = $v['details_type'];
+                    break;
+                }
             }
 
-            $list    = self::getList($params, false)->cursor();
+            if (self::getList($params, false, true)->count() > 100 * 10000) {
+                abort('每次最多导出100万条数据，请筛选条件减少数据~');
+            }
+
             $tmpList = [];
+            $list    = self::getList($params, false, true)->cursor();
             foreach ($list as $v) {
                 // 导出的数据
                 $tmpList[] = [
-                    $v->User->id,
-                    $v->User->tel,
-                    $balanceType[$v['balance_type']] ?? $v['balance_type'],
+                    $v->user_id,
                     $v->title ?? '',
+                    $v->details_type ? ($detailsTypeList[$v->details_type] ?? '--') : '--',
                     $v->change_value,
                     $v->change_balance ?? '',
                     $v->create_time ?? '',
@@ -95,10 +136,10 @@ class BalanceDetailsLogic
             }
 
             // 表格头
-            $header = ['用户ID','用户手机号', '余额类型', '标题', '变更值', '变更后余额', '变化时间'];
+            $header = ['用户ID', '标题', '明细类型', '变更值', '变更后余额', '变化时间'];
             return [
                 'filePath' => export($header, $tmpList),
-                'fileName' => "用户{$balanceTypeTitle}明细.xlsx"
+                'fileName' => "{$balanceTypeTitle}明细.xlsx"
             ];
         } catch (\Exception $e) {
             abort($e->getMessage());

@@ -15,7 +15,7 @@ class BalanceDetailsValidate extends Validate
     // 验证规则
     protected $rule = [
         'user_id|用户'        => 'require',
-        'balance_type|余额类型' => 'require',
+        'details_type|明细类型' => 'require',
         'title|标题'          => 'require',
         'change_value|变更值'  => 'require',
     ];

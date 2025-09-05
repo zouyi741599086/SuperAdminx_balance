@@ -18,7 +18,7 @@ class BalanceLogic
     /**
      * 列表
      * @param array $params get参数
-     * @param bool $page 是否需要翻页
+     * @param bool $page 是否需要翻页，不翻页返回模型
      * */
     public static function getList(array $params = [], bool $page = true)
     {
@@ -35,7 +35,7 @@ class BalanceLogic
             }])
             ->order($orderBy);
 
-        return $page ? $list->paginate($params['pageSize'] ?? 20) : $list->select();
+        return $page ? $list->paginate($params['pageSize'] ?? 20) : $list;
     }
 
     /**
@@ -82,7 +82,7 @@ class BalanceLogic
                     $dateTime
                 ]
             );
-            
+
             // 增加明细
             BalanceDetailsLogic::create($params);
             Db::commit();
@@ -99,7 +99,7 @@ class BalanceLogic
      */
     public static function findBalanceType(string $balanceType)
     {
-        $balanceTypeList = config('superadminx.balance_type');
+        $balanceTypeList = config('plugin.balance.superadminx.balance_type');
         $tmp             = null;
         foreach ($balanceTypeList as $v) {
             if ($v['field'] == $balanceType) {
@@ -111,6 +111,22 @@ class BalanceLogic
             abort('余额类型错误');
         }
         return $tmp;
+    }
+
+    /**
+     * 获取余额的明细类型的配置
+     * @param string $balance_type
+     */
+    public static function getDetailsType(string $balance_type)
+    {
+        $balanceType = config('plugin.balance.superadminx.balance_type', 'array');
+        $result      = [];
+        foreach ($balanceType as $value) {
+            if ($value['field'] == $balance_type) {
+                $result = $value['details_type'];
+            }
+        }
+        return $result;
     }
 
     /**
@@ -138,26 +154,34 @@ class BalanceLogic
     public static function exportData(array $params)
     {
         try {
-            $balanceTypeList = config('superadminx.balance_type');
+            $balanceTypeList = config('plugin.balance.superadminx.balance_type', 'array');
 
-            $list    = self::getList($params, false);
             $tmpList = [];
-            foreach ($list as $v) {
-                // 导出的数据
-                $tmp   = [];
-                $tmp[] = "{$v['User']['name']}/{$v['User']['tel']}";
+            self::getList($params, false)
+                ->chunk(1000, function ($list) use (&$tmpList, &$balanceTypeList)
+                {
+                    foreach ($list as $v) {
+                        // 导出的数据
+                        $tmp = [
+                            $v->user_id,
+                            $v->User->name,
+                            $v->User->tel
+                        ];
 
-                // 防止余额类型的顺序跟数据库的对不上
-                foreach ($balanceTypeList as $val) {
-                    $tmp[] = $v[$val['field']] ?? 0;
-                }
+                        // 防止余额类型的顺序跟数据库的对不上
+                        foreach ($balanceTypeList as $val) {
+                            $tmp[] = $v[$val['field']] ?? 0;
+                        }
 
-                $tmpList[] = $tmp;
-            }
+                        $tmpList[] = $tmp;
+                    }
+                });
+
+
 
             // 表格头
             $header = array_merge(
-                ['用户'],
+                ['用户ID', '用户昵称', '用户手机号'],
                 array_column($balanceTypeList, 'title')
             );
             return [
@@ -167,6 +191,27 @@ class BalanceLogic
         } catch (\Exception $e) {
             abort($e->getMessage());
         }
+    }
+
+    /**
+     * 统计余额
+     * @return array
+     */
+    public static function getTotal() : array
+    {
+        $balanceTypeList = config('plugin.balance.superadminx.balance_type');
+        $sum             = '';
+        foreach ($balanceTypeList as $v) {
+            $sum .= "SUM({$v['field']}) AS {$v['field']},";
+        }
+        $sum = rtrim($sum, ',');
+
+        return Db::query("
+            SELECT 
+                {$sum}
+            FROM 
+                sa_balance
+        ");
     }
 
 }

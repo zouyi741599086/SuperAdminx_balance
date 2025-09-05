@@ -2,11 +2,11 @@ import { useRef, lazy, useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-components';
 import { balanceApi } from '@/api/balance';
 import { ProTable } from '@ant-design/pro-components';
-import { App, Button, Typography, Space, Tooltip, Avatar } from 'antd';
+import { App, Button, Typography, Space, Tooltip, Avatar, Row, Col, Statistic } from 'antd';
 import {
     CloudDownloadOutlined,
 } from '@ant-design/icons';
-import { storage, authCheck } from '@/common/function';
+import { authCheck } from '@/common/function';
 import { fileApi } from '@/api/file';
 import Lazyload from '@/component/lazyLoad/index';
 import SelectUser from '@/components/selectUser';
@@ -29,12 +29,26 @@ export default () => {
 
     useMount(() => {
         getBalanceType();
+        getTotal();
     })
 
     // 刷新表格数据
     const tableReload = () => {
         tableRef.current.reload();
         tableRef.current.clearSelected();
+        getTotal();
+    }
+
+    // 统计余额
+    const [total, setTotal] = useState({});
+    const getTotal = () => {
+        balanceApi.getTotal().then(res => {
+            if (res.code === 1) {
+                setTotal(res.data[0]);
+            } else {
+                message.error(res.message);
+            }
+        })
     }
 
     // 变更余额的用户id
@@ -103,7 +117,7 @@ export default () => {
         {
             title: '操作',
             dataIndex: 'action',
-			search: false,
+            search: false,
             render: (_, record) => <>
                 <Button
                     type="link"
@@ -123,25 +137,7 @@ export default () => {
                 dataIndex: item.field,
                 search: false,
                 sorter: true,
-                render: (_, record) => <>
-                    <Tooltip title={authCheck('balanceDetails') ? '' : '查看明细'}>
-                        <Button
-                            type="link"
-                            size="small"
-                            disabled={authCheck('balanceDetails')}
-                            onClick={() => {
-                                // 存搜索条件，跳转过去后在读出来
-                                storage.set('balanceDetailsFormParams', {
-                                    user_id: record.user_id,
-                                    balance_type: item.field
-                                })
-                                navigate('/balanceDetails');
-                            }}
-                        >
-                            <Typography.Text type="danger">{record[item.field]}</Typography.Text>
-                        </Button>
-                    </Tooltip>
-                </>
+                render: (_, record) => <Typography.Text type="danger">{record[item.field]}</Typography.Text>
             }
         })
         let _columns = [...columns];
@@ -167,6 +163,15 @@ export default () => {
                     title: '用户余额',
                     style: { padding: '0px 24px 12px' },
                 }}
+                content={<>
+                    <Row gutter={[16, 16]}>
+                        {balanceType.map(item => {
+                            return <Col xs={12} sm={12} md={12} lg={6} xl={4} key={item.field}>
+                                <Statistic title={item.title} value={total[item.field]} />
+                            </Col>
+                        })}
+                    </Row>
+                </>}
             >
                 <ProTable
                     actionRef={tableRef}
