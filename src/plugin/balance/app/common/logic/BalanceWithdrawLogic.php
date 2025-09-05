@@ -57,30 +57,6 @@ class BalanceWithdrawLogic
         try {
             validate(BalanceWithdrawValidate::class)->check($params);
 
-<<<<<<< HEAD
-            // 减少余额
-<<<<<<< HEAD
-            Balance::change($params['user_id'], $balanceType, -$params['money'], '提现申请');
-=======
-            Balance::change($params['user_id'], $params['balance_type'], -$params['money'], '提现申请');
->>>>>>> main
-
-            // 提现的相关配置
-            $config = ConfigLogic::getConfig('balance_withdraw_config');
-
-            if ($params['money'] < $config->min_money) {
-                abort('提现金额不能低于' . $config->min_money);
-            }
-
-            // 提现的手续费
-<<<<<<< HEAD
-            $params['shouxufei']    = d2($params['money'] * $config['shouxufei_bili'] / 100);
-            $params['on_money']     = $params['money'] - $params['shouxufei'];
-            $params['orderno']      = get_order_no('TX');
-            $params['balance_type'] = $balanceType;
-=======
-            $params['shouxufei'] = d2($params['money'] * $config->shouxufei_bili / 100);
-=======
             // 提现的相关配置
             $balanceWithdrawConfig = ConfigLogic::getConfig('balance_withdraw_config');
 
@@ -98,10 +74,8 @@ class BalanceWithdrawLogic
             );
 
             $params['shouxufei'] = d2($params['money'] * $balanceWithdrawConfig->shouxufei_bili / 100);
->>>>>>> main
             $params['on_money']  = $params['money'] - $params['shouxufei'];
             $params['orderno']   = get_order_no('TX');
->>>>>>> main
 
             BalanceWithdrawModel::create($params);
             Db::commit();

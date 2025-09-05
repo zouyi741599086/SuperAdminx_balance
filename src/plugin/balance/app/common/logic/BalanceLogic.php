@@ -52,38 +52,7 @@ class BalanceLogic
                 throw new \Exception("变更余额的值不能等于0");
             }
 
-<<<<<<< HEAD
-            // 增加余额
-            if ($params['type'] == 1) {
-                BalanceModel::where('user_id', $params['user_id'])
-                    ->update([
-                        $params['balance_type'] => Db::raw("{$params['balance_type']}+{$params['change_value']}"),
-                    ]);
-            }
-            // 减少余额 可能允许负数
-            if ($params['type'] == 2) {
-<<<<<<< HEAD
-                if ($params['change_value'] > $data[$params['balance_type']]) {
-                    $tmp = self::findBalanceType($params['balance_type']);
-                    throw new \Exception("{$tmp['title']}不足");
-=======
-                $bool = $params['change_value'] > $userBalance[$params['balance_type']];
-=======
             // 减少余额 同时不允许修改为负数
-<<<<<<< HEAD
-            if ($params['change_value'] < 0 && isset($params['isNegative']) && $params['isNegative'] == false) {
-                $userBalance = self::getUserBalance($params['user_id']);
-                $bool        = ($params['change_value'] * -1) > $userBalance[$params['balance_type']];
->>>>>>> main
-                // 是否允许余额为负数，false》不允许，true》允许
-                if (isset($params['isNegative']) && $params['isNegative'] == true) {
-                    $bool = false;
->>>>>>> main
-                }
-                if ($bool) {
-                    $tmp = self::findBalanceType($params['balance_type']);
-                    throw new \Exception("{$tmp['title']}不足");
-=======
             if ($params['change_value'] < 0) {
                 // 如果不允许负余额，则需要检查余额是否足够
                 if (! isset($params['isNegative']) || $params['isNegative'] == false) {
@@ -92,7 +61,6 @@ class BalanceLogic
                         $tmp = self::findBalanceType($params['balance_type']);
                         throw new \Exception("{$tmp['title']}不足");
                     }
->>>>>>> main
                 }
             }
 
