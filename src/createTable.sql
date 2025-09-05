@@ -6,9 +6,11 @@ CREATE TABLE `sa_balance` (
   `create_time` datetime DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_sa_balance_sa_user1_idx` (`user_id`),
+  UNIQUE KEY `fk_sa_balance_sa_user1_idx` (`user_id`) USING BTREE,
   CONSTRAINT `fk_sa_balance_sa_user1` FOREIGN KEY (`user_id`) REFERENCES `sa_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='用户的余额';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='用户的余额';
+
+
 
 CREATE TABLE `sa_balance_withdraw` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -30,7 +32,7 @@ CREATE TABLE `sa_balance_withdraw` (
   PRIMARY KEY (`id`),
   KEY `fk_sa_balance_withdraw_sa_user1_idx` (`user_id`),
   CONSTRAINT `fk_sa_balance_withdraw_sa_user1` FOREIGN KEY (`user_id`) REFERENCES `sa_user` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='用户的余额-提现';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='用户的余额-提现';
 
 CREATE TABLE `sa_balance_integral_details` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -43,7 +45,7 @@ CREATE TABLE `sa_balance_integral_details` (
   PRIMARY KEY (`id`),
   KEY `fk_sa_balance_details_sa_user1_idx` (`user_id`),
   CONSTRAINT `sa_balance_integral_details_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `sa_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 COMMENT='用户的余额明细';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='用户的余额明细';
 
 CREATE TABLE `sa_balance_money_details` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -56,7 +58,7 @@ CREATE TABLE `sa_balance_money_details` (
   PRIMARY KEY (`id`),
   KEY `fk_sa_balance_details_sa_user1_idx` (`user_id`),
   CONSTRAINT `sa_balance_money_details_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `sa_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8 COMMENT='用户的余额明细';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='用户的余额明细';
 
 
 
