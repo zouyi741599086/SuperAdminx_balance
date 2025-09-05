@@ -167,7 +167,7 @@ export default () => {
                     <Row gutter={[16, 16]}>
                         {balanceType.map(item => {
                             return <Col xs={12} sm={12} md={12} lg={6} xl={4} key={item.field}>
-                                <Statistic title={item.title} value={total[item.field]} />
+                                <Statistic title={item.title} value={total[item.field] || 0} />
                             </Col>
                         })}
                     </Row>
