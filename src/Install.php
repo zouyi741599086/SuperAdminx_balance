@@ -1,5 +1,5 @@
 <?php
-namespace SuperAdminx\balance;
+namespace suepradminx\balance;
 
 use think\facade\Db;
 
