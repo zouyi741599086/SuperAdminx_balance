@@ -28,7 +28,7 @@ class BalanceLogic
             $orderBy = "{$params['orderBy']},{$orderBy}";
         }
 
-        $list = BalanceModel::withSearch(['user_id', 'update_time'], $params)
+        $list = BalanceModel::withSearch(['user_id', 'update_time'], $params, true)
             ->with(['User' => function ($query)
             {
                 $query->field('id,img,name,tel');
@@ -46,7 +46,7 @@ class BalanceLogic
     {
         Db::startTrans();
         try {
-            validate(BalanceDetailsValidate::class)->check($params);
+            think_validate(BalanceDetailsValidate::class)->check($params);
 
             if ($params['change_value'] == 0) {
                 throw new \Exception("变更余额的值不能等于0");

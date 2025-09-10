@@ -39,7 +39,7 @@ class BalanceWithdrawLogic
             $with = [];
         }
 
-        $list = BalanceWithdrawModel::withSearch(['user_id', 'orderno', 'status', 'bank_name', 'bank_title', 'bank_number', 'create_time', 'audit_time', 'reason'], $params)
+        $list = BalanceWithdrawModel::withSearch(['user_id', 'orderno', 'status', 'bank_name', 'bank_title', 'bank_number', 'create_time', 'audit_time', 'reason'], $params, true)
             ->with($with)
             ->order($orderBy);
 
@@ -55,7 +55,7 @@ class BalanceWithdrawLogic
     {
         Db::startTrans();
         try {
-            validate(BalanceWithdrawValidate::class)->check($params);
+            think_validate(BalanceWithdrawValidate::class)->check($params);
 
             // 提现的相关配置
             $balanceWithdrawConfig = ConfigLogic::getConfig('balance_withdraw_config');

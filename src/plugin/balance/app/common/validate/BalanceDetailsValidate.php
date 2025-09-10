@@ -1,7 +1,7 @@
 <?php
 namespace plugin\balance\app\common\validate;
 
-use taoser\Validate;
+use superadminx\think_validate\Validate;
 
 /**
  * 用户余额明细 验证器

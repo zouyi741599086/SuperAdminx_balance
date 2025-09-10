@@ -70,7 +70,7 @@ class BalanceDetailsLogic
         }
 
         $list = (self::getModel($params['balance_type'], $params['submeter_month'] ?? null))
-            ->withSearch(['user_id', 'title', 'details_type', 'create_time'], $params)
+            ->withSearch(['user_id', 'title', 'details_type', 'create_time'], $params, true)
             ->with($with)
             ->order($orderBy);
 
@@ -84,7 +84,7 @@ class BalanceDetailsLogic
     public static function create(array $params)
     {
         try {
-            validate(BalanceDetailsValidate::class)->check($params);
+            think_validate(BalanceDetailsValidate::class)->check($params);
 
             $model = self::getModel($params['balance_type']);
             $model->save([
