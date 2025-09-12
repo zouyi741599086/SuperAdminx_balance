@@ -6,7 +6,7 @@ use plugin\balance\app\common\logic\BalanceLogic;
 use plugin\balance\app\common\validate\BalanceWithdrawValidate;
 use plugin\balance\api\Balance;
 use plugin\admin\app\common\logic\ConfigLogic;
-use think\facade\Db;
+use support\think\Db;
 
 /**
  * 余额提现 逻辑层

@@ -3,7 +3,6 @@ namespace plugin\balance\app\common\logic;
 
 use plugin\balance\app\common\model\BalanceModel;
 use plugin\balance\app\common\validate\BalanceDetailsValidate;
-use think\facade\Db;
 
 /**
  * 用户余额明细 逻辑层
