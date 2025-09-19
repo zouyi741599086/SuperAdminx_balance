@@ -5,7 +5,6 @@ use plugin\balance\app\common\model\BalanceWithdrawModel;
 use plugin\balance\app\common\logic\BalanceLogic;
 use plugin\balance\app\common\validate\BalanceWithdrawValidate;
 use plugin\balance\api\Balance;
-use plugin\admin\app\common\logic\ConfigLogic;
 use support\think\Db;
 
 /**
@@ -58,7 +57,7 @@ class BalanceWithdrawLogic
             think_validate(BalanceWithdrawValidate::class)->check($params);
 
             // 提现的相关配置
-            $balanceWithdrawConfig = ConfigLogic::getConfig('balance_withdraw_config');
+            $balanceWithdrawConfig = get_config('balance_withdraw_config');
 
             if ($params['money'] < $balanceWithdrawConfig->min_money) {
                 throw new \Exception('提现金额不能低于' . $balanceWithdrawConfig->min_money);
