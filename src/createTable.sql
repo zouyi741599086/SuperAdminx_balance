@@ -34,7 +34,7 @@ CREATE TABLE `sa_balance_withdraw` (
   CONSTRAINT `fk_sa_balance_withdraw_sa_user1` FOREIGN KEY (`user_id`) REFERENCES `sa_user` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='用户的余额-提现';
 
-CREATE TABLE `sa_balance_integral_details` (
+CREATE TABLE `sa_balance_details_integral` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL COMMENT '所属用户',
   `details_type` varchar(50) DEFAULT NULL,
@@ -44,10 +44,10 @@ CREATE TABLE `sa_balance_integral_details` (
   `create_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_sa_balance_details_sa_user1_idx` (`user_id`),
-  CONSTRAINT `sa_balance_integral_details_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `sa_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `sa_balance_details_integral_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `sa_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='用户的余额明细';
 
-CREATE TABLE `sa_balance_money_details` (
+CREATE TABLE `sa_balance_details_money` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL COMMENT '所属用户',
   `details_type` varchar(50) DEFAULT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE `sa_balance_money_details` (
   `create_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_sa_balance_details_sa_user1_idx` (`user_id`),
-  CONSTRAINT `sa_balance_money_details_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `sa_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `sa_balance_details_money_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `sa_user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='用户的余额明细';
 
 
