@@ -3,6 +3,7 @@ namespace plugin\balance\app\common\logic;
 
 use plugin\balance\app\common\model\BalanceModel;
 use plugin\balance\app\common\validate\BalanceDetailsValidate;
+use plugin\balance\app\common\model\BalanceDetailsModel;
 
 /**
  * 用户余额明细 逻辑层
@@ -14,35 +15,27 @@ class BalanceDetailsLogic
 {
     /**
      * 根据余额类型获取对应的余额明细的模型
-     * @param string $balanceType 余额类型
-     * @param string $submeterMonth 分表的月份，如2025-01
+     * @param string $balanceType 余额类型，用来当模型的后缀
+     * @param string $submeterMonth 分表的月份，如2025-01，也会用来当模型后缀
      */
     public static function getModel(string $balanceType, ?string $submeterMonth = null)
     {
         if (! $balanceType) {
             abort('余额模型类型错误');
         }
-        // 使用空格替换字符串中的下划线  
-        $balanceTypeModel = str_replace('_', ' ', $balanceType);
-        // 使用ucwords函数将字符串中的每个单词首字母转换为大写  
-        $balanceTypeModel = ucwords($balanceTypeModel);
-        // 将空格替换为空，实现驼峰命名  
-        $balanceTypeModel = str_replace(' ', '', $balanceTypeModel);
-
-        $path  = "\\plugin\\balance\\app\\common\\model\\Balance{$balanceTypeModel}DetailsModel";
-        $model = new $path();
+        $suffix = "_{$balanceType}";
 
         // 判断是否有使用分表
         $balanceTypeList = config('plugin.balance.superadminx.balance_type', 'array');
         foreach ($balanceTypeList as $key => $value) {
             if ($value['field'] == $balanceType && isset($value['submeter_start_month']) && $value['submeter_start_month']) {
                 $date   = \DateTime::createFromFormat('Y-m', $submeterMonth ?: date('Y-m'));
-                $suffix = '_' . $date->format('y') . $date->format('m');
+                $suffix .= '_' . $date->format('y') . $date->format('m');
                 break;
             }
         }
 
-        return $model::suffix($suffix ?? '');
+        return BalanceDetailsModel::suffix($suffix);
     }
 
     /**
@@ -90,7 +83,8 @@ class BalanceDetailsLogic
                 ...$params,
                 ...[
                     'change_balance' => BalanceModel::where('user_id', $params['user_id'])->value($params['balance_type'])
-                ]
+                ],
+                'create_time' => date('Y-m-d H:i:s'),
             ]);
         } catch (\Exception $e) {
             var_dump($e);

@@ -10,11 +10,14 @@ use plugin\user\app\common\model\UserModel;
  * @author zy <741599086@qq.com>
  * @link https://www.superadminx.com/
  * */
-class BalanceIntegralDetailsModel extends BaseModel
+class BalanceDetailsModel extends BaseModel
 {
 
     // 表名
-    protected $name = 'balance_integral_details';
+    protected $name = 'balance_details';
+
+    // 模型后缀
+    protected $suffix = '';
 
     // 自动时间戳
     protected $updateTime = false;
@@ -28,6 +31,13 @@ class BalanceIntegralDetailsModel extends BaseModel
     // 包含附件的字段，''代表直接等于附件路劲，'array'代表数组中包含附件路劲，'editor'代表富文本中包含附件路劲
     protected $file = [
     ];
+
+    // 模型初始化
+    protected function init(): void
+    {
+        // 模型初始化
+        $this->setOption('suffix', '_' . config('plugin.balance.superadminx.balance_type', 'array')[0]['field']);
+    }
 
     // 用户 搜索器
     public function searchUserIdAttr($query, $value, $data)

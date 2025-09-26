@@ -5,6 +5,7 @@ use plugin\balance\app\common\model\BalanceWithdrawModel;
 use plugin\balance\app\common\logic\BalanceLogic;
 use plugin\balance\app\common\validate\BalanceWithdrawValidate;
 use plugin\balance\api\Balance;
+use plugin\admin\app\common\logic\ConfigLogic;
 use support\think\Db;
 
 /**
@@ -57,7 +58,7 @@ class BalanceWithdrawLogic
             think_validate(BalanceWithdrawValidate::class)->check($params);
 
             // 提现的相关配置
-            $balanceWithdrawConfig = get_config('balance_withdraw_config');
+            $balanceWithdrawConfig = ConfigLogic::getConfig('balance_withdraw_config');
 
             if ($params['money'] < $balanceWithdrawConfig->min_money) {
                 throw new \Exception('提现金额不能低于' . $balanceWithdrawConfig->min_money);
@@ -212,24 +213,24 @@ class BalanceWithdrawLogic
             $tmpList = [];
             foreach ($list as $v) {
 
-                switch ($v['status']) {
+                switch ($v->status) {
                     case 2:
-                        $v['status'] = '待审核';
+                        $status = '待审核';
                         break;
                     case 4:
-                        $v['status'] = '审核通过待打款';
+                        $status = '审核通过待打款';
                         break;
                     case 6:
-                        $v['status'] = '审核拒绝';
+                        $status = '审核拒绝';
                         break;
                     case 7:
-                        $v['status'] = '打款中';
+                        $status = '打款中';
                         break;
                     case 8:
-                        $v['status'] = '打款成功';
+                        $status = '打款成功';
                         break;
                     case 10:
-                        $v['status'] = '打款失败';
+                        $status = '打款失败';
                         break;
                 }
 
@@ -237,7 +238,7 @@ class BalanceWithdrawLogic
                 $tmpList[] = [
                     "{$v->User->name}/{$v->User->tel}",
                     $v->orderno ?? '',
-                    $v->status ?? '',
+                    $status ?? '',
                     $v->money ?? '',
                     $v->shouxufei ?? '',
                     $v->on_money ?? '',
