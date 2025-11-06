@@ -12,28 +12,28 @@ use plugin\user\app\common\model\UserModel;
  * */
 class BalanceDetailsModel extends BaseModel
 {
-
-    // 表名
-    protected $name = 'balance_details';
-
-    // 模型后缀
-    protected $suffix = '';
-
-    // 自动时间戳
-    protected $updateTime = false;
-
-    // 字段类型转换
-    protected $type = [
-        'change_value' => 'float',
-        'change_balance' => 'float',
-    ];
-
-    // 包含附件的字段，''代表直接等于附件路劲，'array'代表数组中包含附件路劲，'editor'代表富文本中包含附件路劲
-    protected $file = [
-    ];
+    /**
+     * 模型参数
+     * @return array
+     */
+    protected function getOptions() : array
+    {
+        return [
+            'name'               => 'balance_details',
+            'suffix'             => '',
+            'autoWriteTimestamp' => true,
+            'updateTime'         => false,
+            'type'               => [
+                'change_value'   => 'float',
+                'change_balance' => 'float',
+            ],
+            'file'               => [ // 包含附件的字段，''代表直接等于附件路劲，'array'代表数组中包含附件路劲，'editor'代表富文本中包含附件路劲
+            ],
+        ];
+    }
 
     // 模型初始化
-    protected function init(): void
+    protected function init() : void
     {
         // 模型初始化
         $this->setOption('suffix', '_' . config('plugin.balance.superadminx.balance_type', 'array')[0]['field']);

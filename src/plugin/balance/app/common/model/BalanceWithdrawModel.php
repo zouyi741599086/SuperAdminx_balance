@@ -12,21 +12,21 @@ use plugin\user\app\common\model\UserModel;
  * */
 class BalanceWithdrawModel extends BaseModel
 {
-
-    // 表名
-    protected $name = 'balance_withdraw';
-
-    // 自动时间戳
-    protected $autoWriteTimestamp = true;
-
-    // 字段类型转换
-    protected $type = [
-    ];
-
-    // 包含附件的字段，''代表直接等于附件路劲，'array'代表数组中包含附件路劲，'editor'代表富文本中包含附件路劲
-    protected $file = [
-    ];
-
+    /**
+     * 模型参数
+     * @return array
+     */
+    protected function getOptions() : array
+    {
+        return [
+            'name'               => 'balance_withdraw',
+            'autoWriteTimestamp' => true,
+            'type'               => [
+            ],
+            'file'               => [ // 包含附件的字段，''代表直接等于附件路劲，'array'代表数组中包含附件路劲，'editor'代表富文本中包含附件路劲
+            ],
+        ];
+    }
 
     // 用户 搜索器
     public function searchUserIdAttr($query, $value, $data)

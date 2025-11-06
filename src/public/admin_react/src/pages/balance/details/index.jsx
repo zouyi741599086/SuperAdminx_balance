@@ -307,6 +307,9 @@ export default () => {
                                 orderBy, // 排序
                                 page: params.current,
                             });
+                            if (result.code !== 1) {
+                                message.error(result.message);
+                            }
                             return {
                                 data: result.data.data,
                                 success: true,
